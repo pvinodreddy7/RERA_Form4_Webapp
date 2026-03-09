@@ -693,10 +693,10 @@ def generate():
 def parse_certificate():
     """Parse a previous-quarter Form 4 .docx using Gemini API and return structured JSON."""
     try:
-        import google.generativeai as genai
+        from google import genai as _genai
         import json as _json
     except ImportError:
-        return {'error': 'google-generativeai package not installed. Run: pip install google-generativeai'}, 500
+        return {'error': 'google-genai package not installed. Run: pip install google-genai'}, 500
     try:
         api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
         if not api_key:
@@ -709,8 +709,7 @@ def parse_certificate():
         if not text.strip():
             return {'error': 'Could not extract any text from this document.'}, 400
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        client = _genai.Client(api_key=api_key)
 
         prompt = (
             "You are parsing a Karnataka RERA Form 4 Chartered Accountant's Certificate document.\n"
@@ -744,7 +743,10 @@ def parse_certificate():
             f"Document text:\n{text[:12000]}"
         )
 
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt
+        )
         result = response.text.strip()
         # Strip markdown fences if the model adds them
         if result.startswith('```'):
