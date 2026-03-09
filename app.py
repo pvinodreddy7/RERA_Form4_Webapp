@@ -681,13 +681,17 @@ def generate():
 
 @app.route('/parse_certificate', methods=['POST'])
 def parse_certificate():
-    """Parse a previous-quarter Form 4 .docx using Claude API and return structured JSON."""
+    """Parse a previous-quarter Form 4 .docx using Gemini API and return structured JSON."""
     try:
-        import anthropic as _ant
+        import google.generativeai as genai
         import json as _json
     except ImportError:
-        return {'error': 'anthropic package not installed. Run: pip install anthropic'}, 500
+        return {'error': 'google-generativeai package not installed. Run: pip install google-generativeai'}, 500
     try:
+        api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
+        if not api_key:
+            return {'error': 'GEMINI_API_KEY not set. Get a free key at https://aistudio.google.com/apikey'}, 500
+
         f = request.files.get('file')
         if not f:
             return {'error': 'No file uploaded'}, 400
@@ -695,7 +699,9 @@ def parse_certificate():
         if not text.strip():
             return {'error': 'Could not extract any text from this document.'}, 400
 
-        client = _ant.Anthropic()
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+
         prompt = (
             "You are parsing a Karnataka RERA Form 4 Chartered Accountant's Certificate document.\n"
             "Extract the following fields and return ONLY a valid JSON object — no markdown, no explanation.\n"
@@ -725,15 +731,11 @@ def parse_certificate():
             "  unsold_flats        — number of unsold flats\n"
             "  unsold_total_area   — unsold carpet area in sq.mts.\n"
             "  total_saleable_area — total saleable area if mentioned\n\n"
-            f"Document text:\n{text[:10000]}"
+            f"Document text:\n{text[:12000]}"
         )
 
-        msg = client.messages.create(
-            model='claude-3-haiku-20240307',
-            max_tokens=2048,
-            messages=[{'role': 'user', 'content': prompt}]
-        )
-        result = msg.content[0].text.strip()
+        response = model.generate_content(prompt)
+        result = response.text.strip()
         # Strip markdown fences if the model adds them
         if result.startswith('```'):
             result = '\n'.join(result.split('\n')[1:]).rsplit('```', 1)[0].strip()
