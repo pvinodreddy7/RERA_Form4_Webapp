@@ -255,72 +255,74 @@ def build_cost_table(doc, d):
     single_val_row('Net Amount which can be withdrawn from the Designated Bank Account under this certificate',
                    d.get('net_withdrawable',''), bg='D5F0E8', bold=True)
 
+    # ── Helpers for label/value rows (used in sections 2 & 3) ──────────────────
+    def lv_row(label, value, bg='FAFCFF', label_bold=False, indent=0.15):
+        """Label in col1, value in merged cols 2+3."""
+        row = tbl.add_row(); cells = row.cells
+        for i, w in enumerate(W): cells[i].width = w
+        for i in range(1, 4): set_bg(cells[i], bg)
+        p = cells[1].paragraphs[0]
+        p.paragraph_format.space_before = Pt(1)
+        p.paragraph_format.space_after = Pt(1)
+        p.paragraph_format.left_indent = Inches(indent)
+        run = p.add_run(label)
+        run.font.size = Pt(9)
+        run.bold = label_bold
+        merged = cells[2].merge(cells[3])
+        set_bg(merged, bg)
+        cell_para(merged, str(value) if value else '', size=9, align=WD_ALIGN_PARAGRAPH.LEFT)
+
+    def b_sh_row(text, bg='EEF3FA'):
+        """Sub-header spanning cols 1+2+3."""
+        row = tbl.add_row(); cells = row.cells
+        for i, w in enumerate(W): cells[i].width = w
+        for i in range(4): set_bg(cells[i], bg)
+        merged = cells[1].merge(cells[2]).merge(cells[3])
+        p = merged.paragraphs[0]
+        p.paragraph_format.space_before = Pt(2)
+        p.paragraph_format.space_after = Pt(2)
+        p.paragraph_format.left_indent = Inches(0.05)
+        run = p.add_run(text); run.bold = True; run.font.size = Pt(9)
+
     # Section 2: Borrowings
     section_row('2', 'Borrowings / Mortgage Details (If Applicable)')
-    row_b = tbl.add_row(); cells_b = row_b.cells
-    for i, w in enumerate(W): cells_b[i].width = w
-    merged_b = cells_b[1].merge(cells_b[2]).merge(cells_b[3])
-    p_b = merged_b.paragraphs[0]
-    p_b.paragraph_format.space_before = Pt(2); p_b.paragraph_format.space_after = Pt(2)
-    def add_borrow_line(para, label, value):
-        r1 = para.add_run(label); r1.font.size = Pt(9); r1.bold = True
-        r2 = para.add_run(f' {value}\n'); r2.font.size = Pt(9)
-    add_borrow_line(p_b, 'A. Borrowing Details\n1. Name of the Lender:', d.get('lender','NIL'))
-    add_borrow_line(p_b, '2. Amount Disbursed:', d.get('amt_disbursed','NIL'))
-    add_borrow_line(p_b, '3. Amount pending for disbursement from Lender:', d.get('pending_disb','NIL'))
-    add_borrow_line(p_b, '4. Amount to be repaid to lender:', d.get('amt_repay','NIL'))
-    add_borrow_line(p_b, '\nB. Mortgage Details\n1. Mortgaged to (Name of Entity/Institution):', d.get('mortgaged_to','NIL'))
-    add_borrow_line(p_b, '2. Amount Disbursed:', d.get('m_amt_disbursed','NIL'))
-    add_borrow_line(p_b, '3. Amount pending for disbursement:', d.get('m_pending','NIL'))
-    add_borrow_line(p_b, '4. Amount to be repaid to lender:', d.get('m_repay','NIL'))
+    b_sh_row('A. Borrowing Details')
+    lv_row('1. Name of the Lender', d.get('lender','NIL'))
+    lv_row('2. Amount Disbursed', inr(d.get('amt_disbursed','NIL')))
+    lv_row('3. Amount pending for disbursement from Lender', inr(d.get('pending_disb','NIL')))
+    lv_row('4. Amount to be repaid to lender', inr(d.get('amt_repay','NIL')))
+    b_sh_row('B. Mortgage Details')
+    lv_row('1. Mortgaged to (Name of Entity / Institution)', d.get('mortgaged_to','NIL'))
+    lv_row('2. Amount Disbursed', inr(d.get('m_amt_disbursed','NIL')))
+    lv_row('3. Amount pending for disbursement', inr(d.get('m_pending','NIL')))
+    lv_row('4. Amount to be repaid to lender', inr(d.get('m_repay','NIL')))
 
     # Section 3: Bank Transactions
     section_row('3', 'Details of transactions in the designated RERA Bank Account (Including New Account)')
-    row_t = tbl.add_row(); cells_t = row_t.cells
-    for i, w in enumerate(W): cells_t[i].width = w
-    merged_t = cells_t[1].merge(cells_t[2]).merge(cells_t[3])
-    pt = merged_t.paragraphs[0]
-    pt.paragraph_format.space_before = Pt(2); pt.paragraph_format.space_after = Pt(2)
-    def btline(para, label, val):
-        r1 = para.add_run(label); r1.font.size = Pt(9); r1.bold = True
-        r2 = para.add_run(f' {val}\n'); r2.font.size = Pt(9)
-    btline(pt, 'Total number of units booked:', d.get('units_booked',''))
-    btline(pt, 'Total amount realized from sale of units during the quarter:', inr(d.get('total_realized','')))
-    btline(pt, 'Total amount deposited into the bank out of sale proceeds during the quarter:', inr(d.get('total_deposited','')))
-    btline(pt, '% Of Deposit made:', d.get('pct_deposited',''))
+    lv_row('Total number of units booked', d.get('units_booked',''), bg='F7FAFF')
+    lv_row('Total amount realized from sale of units during the quarter', inr(d.get('total_realized','')), bg='F7FAFF')
+    lv_row('Total amount deposited into the bank out of sale proceeds during the quarter', inr(d.get('total_deposited','')), bg='F7FAFF')
+    lv_row('% Of Deposit made', d.get('pct_deposited',''), bg='EAF7EE', label_bold=True)
 
     # Quarterly reconciliation
-    row_r = tbl.add_row(); cells_r = row_r.cells
-    for i, w in enumerate(W): cells_r[i].width = w
-    merged_r = cells_r[1].merge(cells_r[2]).merge(cells_r[3])
-    pr = merged_r.paragraphs[0]
-    pr.paragraph_format.space_before = Pt(2); pr.paragraph_format.space_after = Pt(2)
-    def rline(para, label, val):
-        r1 = para.add_run(label); r1.font.size = Pt(9); r1.bold = True
-        r2 = para.add_run(f' {val}\n'); r2.font.size = Pt(9)
-    rline(pr, 'Reconciliation for the Quarter:', '')
-    rline(pr, 'Opening Balance Date:', d.get('q_open_date',''))
-    rline(pr, 'Opening Balance as per bank statement (INR):', inr(d.get('q_open_bal','')))
-    rline(pr, 'Deposits during the Quarter on account of sales (INR):', inr(d.get('q_dep_sales','')))
-    rline(pr, 'Other Deposits made (If any):', inr(d.get('q_dep_other','')))
-    rline(pr, 'Withdrawals during the Quarter from sale proceeds (INR):', inr(d.get('q_wdl_sales','')))
-    rline(pr, 'Other withdrawals made (if any):', inr(d.get('q_wdl_other','')))
-    rline(pr, 'Closing Balance as per bank statement (INR):', inr(d.get('q_close_bal','')))
-    rline(pr, 'Closing Balance Date:', d.get('q_close_date',''))
+    b_sh_row('Reconciliation for the Quarter')
+    lv_row('Opening Balance Date', d.get('q_open_date',''))
+    lv_row('Opening Balance as per bank statement (INR)', inr(d.get('q_open_bal','')))
+    lv_row('Deposits during the Quarter on account of sales (INR)', inr(d.get('q_dep_sales','')))
+    lv_row('Other Deposits made (If any)', inr(d.get('q_dep_other','')))
+    lv_row('Withdrawals during the Quarter from sale proceeds (INR)', inr(d.get('q_wdl_sales','')))
+    lv_row('Other withdrawals made (if any)', inr(d.get('q_wdl_other','')))
+    lv_row('Closing Balance as per bank statement (INR)', inr(d.get('q_close_bal','')), bg='D5E3F7', label_bold=True)
+    lv_row('Closing Balance Date', d.get('q_close_date',''))
 
     # Cumulative reconciliation
-    row_c = tbl.add_row(); cells_c = row_c.cells
-    for i, w in enumerate(W): cells_c[i].width = w
-    merged_c = cells_c[1].merge(cells_c[2]).merge(cells_c[3])
-    pc = merged_c.paragraphs[0]
-    pc.paragraph_format.space_before = Pt(2); pc.paragraph_format.space_after = Pt(2)
-    rline(pc, 'Cumulative Reconciliation from beginning of project (till end of quarter):', '')
-    rline(pc, 'Opening balance of the account (INR):', inr(d.get('c_open_bal','')))
-    rline(pc, 'Total Deposits made from sale proceeds (including old RERA Account) (INR):', inr(d.get('c_dep_sales','')))
-    rline(pc, 'Total deposits made other than sale proceeds (if any) (INR):', inr(d.get('c_dep_other','')))
-    rline(pc, 'Total Withdrawals made from sale proceeds including Sales returns (INR):', inr(d.get('c_wdl_sales','')))
-    rline(pc, 'Total withdrawals made other than those from sale proceeds (if any) (INR):', inr(d.get('c_wdl_other','')))
-    rline(pc, 'Closing balance for the current quarter (INR):', inr(d.get('c_close_bal','')))
+    b_sh_row('Cumulative Reconciliation from beginning of project (till end of quarter)')
+    lv_row('Opening balance of the account (INR)', inr(d.get('c_open_bal','')))
+    lv_row('Total Deposits made from sale proceeds (including old RERA Account) (INR)', inr(d.get('c_dep_sales','')))
+    lv_row('Total deposits made other than sale proceeds (if any) (INR)', inr(d.get('c_dep_other','')))
+    lv_row('Total Withdrawals made from sale proceeds including Sales returns (INR)', inr(d.get('c_wdl_sales','')))
+    lv_row('Total withdrawals made other than those from sale proceeds (if any) (INR)', inr(d.get('c_wdl_other','')))
+    lv_row('Closing balance for the current quarter (INR)', inr(d.get('c_close_bal','')), bg='D5E3F7', label_bold=True)
 
     return tbl
 
@@ -406,6 +408,8 @@ def generate_form4(d):
     if d.get('project_cost_words'):
         cost_str += f' ({d.get("project_cost_words","")})'
     field('Cost of Real Estate Project\t', cost_str)
+    if d.get('quarter_label'):
+        field('Quarter\t\t\t\t', d.get('quarter_label',''))
     field('Quarter End Date\t\t', d.get('quarter_end',''))
 
     doc.add_paragraph()
@@ -422,7 +426,7 @@ def generate_form4(d):
     def bank_block(holder, krbad, acno, bank, ifsc, branch):
         for label, val in [
             ('Name of the Account Holder', holder),
-            ('Name of the Designated bank account as per KRBAD', krbad),
+            ('Name of the Designated bank account as per KRERA', krbad),
             ('Designated Account Number', acno),
             ('Bank Name\t\t\t', bank),
             ('IFSC Code\t\t\t', ifsc),

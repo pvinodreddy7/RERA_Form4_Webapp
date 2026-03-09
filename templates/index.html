@@ -138,12 +138,13 @@
     <div class="step active" data-s="0" onclick="gotoStep(0)"><span class="sn">1</span>Project Info</div>
     <div class="step" data-s="1" onclick="gotoStep(1)"><span class="sn">2</span>Bank Accounts</div>
     <div class="step" data-s="2" onclick="gotoStep(2)"><span class="sn">3</span>Cost Statement</div>
-    <div class="step" data-s="3" onclick="gotoStep(3)"><span class="sn">4</span>Bank Transactions</div>
-    <div class="step" data-s="4" onclick="gotoStep(4)"><span class="sn">5</span>Receivables</div>
-    <div class="step" data-s="5" onclick="gotoStep(5)"><span class="sn">6</span>Sold Inventory</div>
-    <div class="step" data-s="6" onclick="gotoStep(6)"><span class="sn">7</span>Unsold Inventory</div>
-    <div class="step" data-s="7" onclick="gotoStep(7)"><span class="sn">8</span>CA Details</div>
-    <div class="step" data-s="8" onclick="gotoStep(8)"><span class="sn">9</span>Review &amp; Generate</div>
+    <div class="step" data-s="3" onclick="gotoStep(3)"><span class="sn">4</span>Borrowings</div>
+    <div class="step" data-s="4" onclick="gotoStep(4)"><span class="sn">5</span>Bank Transactions</div>
+    <div class="step" data-s="5" onclick="gotoStep(5)"><span class="sn">6</span>Receivables</div>
+    <div class="step" data-s="6" onclick="gotoStep(6)"><span class="sn">7</span>Sold Inventory</div>
+    <div class="step" data-s="7" onclick="gotoStep(7)"><span class="sn">8</span>Unsold Inventory</div>
+    <div class="step" data-s="8" onclick="gotoStep(8)"><span class="sn">9</span>CA Details</div>
+    <div class="step" data-s="9" onclick="gotoStep(9)"><span class="sn">10</span>Review &amp; Generate</div>
   </div>
 
   <form id="mainForm" novalidate>
@@ -154,17 +155,19 @@
         <div class="card-title"><span class="badge">1</span> Project Information</div>
         <div class="grid g2">
           <div class="fg"><label>KRERA Registration Number <span class="req">*</span></label>
-            <input id="krera_reg" placeholder="TOR/PRM/KA/RERA/1251/446/PR/230830/005711"/></div>
+            <input id="krera_reg" placeholder="PRM/KA/RERA/1251/446/PR/230101/000001"/></div>
           <div class="fg"><label>Certificate Date <span class="req">*</span></label>
-            <input id="cert_date" placeholder="15th January 2026"/></div>
+            <input id="cert_date" placeholder="15th January 2026" type="text"/></div>
           <div class="fg"><label>Project Name <span class="req">*</span></label>
-            <input id="project_name" placeholder="S K DWARAKA"/></div>
+            <input id="project_name" placeholder="ABC RESIDENCY"/></div>
           <div class="fg"><label>Promoter Name <span class="req">*</span></label>
-            <input id="promoter_name" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
+            <input id="promoter_name" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
           <div class="fg"><label>Cost of Real Estate Project (₹) <span class="req">*</span></label>
-            <input id="project_cost" placeholder="39,94,20,048"/></div>
+            <input id="project_cost" placeholder="40,00,00,000"/></div>
           <div class="fg"><label>Cost in Words</label>
-            <input id="project_cost_words" placeholder="Rupees Thirty-Nine Crores Ninety-Four Lakhs..."/></div>
+            <input id="project_cost_words" placeholder="Rupees Forty Crores Only"/></div>
+          <div class="fg"><label>Quarter for which Certificate is Issued <span class="req">*</span></label>
+            <input id="quarter_label" placeholder="Q3 2025-26"/></div>
           <div class="fg"><label>Quarter End Date <span class="req">*</span></label>
             <input id="quarter_end" placeholder="31st December 2025"/></div>
           <div class="fg"><label>Place</label>
@@ -188,7 +191,7 @@
         <div class="sub-heading">Account 1 — 100% Collection Account</div>
         <div class="grid g2">
           <div class="fg full"><label>Account Holder Name</label><input id="b1_holder" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
-          <div class="fg full"><label>Account Name as per KRBAD</label><input id="b1_krbad" placeholder="S K BUILDERS AND DEVELOPERS INC RERA COLLECTION ACCOUNT S K DWARAKA – 100%"/></div>
+          <div class="fg full"><label>Account Name as per KRERA</label><input id="b1_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD RERA COLLECTION ACCOUNT ABC RESIDENCY – 100%"/></div>
           <div class="fg"><label>Account Number</label><input id="b1_acno" placeholder="923020023210266"/></div>
           <div class="fg"><label>Bank Name</label><input id="b1_bank" placeholder="Axis Bank"/></div>
           <div class="fg"><label>IFSC Code</label><input id="b1_ifsc" placeholder="UTIB0000734"/></div>
@@ -198,7 +201,7 @@
         <div class="sub-heading">Account 2 — 70% Designated Account</div>
         <div class="grid g2">
           <div class="fg full"><label>Account Holder Name</label><input id="b2_holder" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
-          <div class="fg full"><label>Account Name as per KRBAD</label><input id="b2_krbad" placeholder="S K BUILDERS AND DEVELOPERS INC S K DWARAKA RERA DESIGNATED ACCOUNT - 70%"/></div>
+          <div class="fg full"><label>Account Name as per KRERA</label><input id="b2_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA DESIGNATED ACCOUNT - 70%"/></div>
           <div class="fg"><label>Account Number</label><input id="b2_acno" placeholder="923020029328233"/></div>
           <div class="fg"><label>Bank Name</label><input id="b2_bank" placeholder="Axis Bank"/></div>
           <div class="fg"><label>IFSC Code</label><input id="b2_ifsc" placeholder="UTIB0000734"/></div>
@@ -208,7 +211,7 @@
         <div class="sub-heading">Account 3 — 30% Account</div>
         <div class="grid g2">
           <div class="fg full"><label>Account Holder Name</label><input id="b3_holder" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
-          <div class="fg full"><label>Account Name as per KRBAD</label><input id="b3_krbad" placeholder="S K BUILDERS AND DEVELOPERS INC S K DWARAKA RERA ACCOUNT - 30%"/></div>
+          <div class="fg full"><label>Account Name as per KRERA</label><input id="b3_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA ACCOUNT - 30%"/></div>
           <div class="fg"><label>Account Number</label><input id="b3_acno" placeholder="923020023416406"/></div>
           <div class="fg"><label>Bank Name</label><input id="b3_bank" placeholder="Axis Bank"/></div>
           <div class="fg"><label>IFSC Code</label><input id="b3_ifsc" placeholder="UTIB0000734"/></div>
@@ -243,8 +246,8 @@
             <tr>
               <td></td>
               <td>a) Acquisition of ownership / title of land (outright purchase / lease etc.)</td>
-              <td><input id="lc_a_est" placeholder="15,78,27,400" oninput="recalc()"/></td>
-              <td><input id="lc_a_inc" placeholder="15,78,27,400" oninput="recalc()"/></td>
+              <td><input id="lc_a_est" placeholder="10,00,00,000" oninput="recalc()"/></td>
+              <td><input id="lc_a_inc" placeholder="10,00,00,000" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
@@ -255,8 +258,8 @@
             <tr>
               <td></td>
               <td>c) Amount paid to Competent Authority for approval, NOCs, stamp duty, transfer charges, registration, conversion charges, taxes, statutory payments etc.</td>
-              <td><input id="lc_c_est" placeholder="79,02,296" oninput="recalc()"/></td>
-              <td><input id="lc_c_inc" placeholder="1,14,30,251" oninput="recalc()"/></td>
+              <td><input id="lc_c_est" placeholder="50,00,000" oninput="recalc()"/></td>
+              <td><input id="lc_c_inc" placeholder="1,00,00,000" oninput="recalc()"/></td>
             </tr>
             <tr class="subtotal">
               <td></td>
@@ -271,32 +274,32 @@
             <tr>
               <td></td>
               <td>(i) Estimated Cost of Construction as certified by Engineer</td>
-              <td><input id="dc_i_est" placeholder="23,36,90,352" oninput="recalc()"/></td>
+              <td><input id="dc_i_est" placeholder="20,00,00,000" oninput="recalc()"/></td>
               <td style="background:#f8f8f8;color:#aaa"><input style="color:#aaa" placeholder="—" readonly tabindex="-1"/></td>
             </tr>
             <tr>
               <td></td>
               <td>(ii) Actual Cost of construction incurred as per books of accounts as verified by CA<br/><small style="color:#888">(Note: minimum of (i) or (ii) is added to total cost incurred)</small></td>
               <td style="background:#f8f8f8;color:#aaa"><input style="color:#aaa" placeholder="—" readonly tabindex="-1"/></td>
-              <td><input id="dc_ii_inc" placeholder="18,32,12,622" oninput="recalc()"/></td>
+              <td><input id="dc_ii_inc" placeholder="15,00,00,000" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
               <td>(iii) On-site expenditure for development of entire project excluding cost of construction (salaries, consultants, site overheads, development works, water, electricity, sewerage, roads, machinery, consumables etc.)</td>
               <td><input id="dc_iii_est" placeholder="NIL" oninput="recalc()"/></td>
-              <td><input id="dc_iii_inc" placeholder="4,06,27,877" oninput="recalc()"/></td>
+              <td><input id="dc_iii_inc" placeholder="4,00,00,000" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
               <td>Payment of Taxes, cess, fees, charges, premiums, interest etc. to any statutory authority</td>
               <td><input id="dc_tax_est" placeholder="NIL" oninput="recalc()"/></td>
-              <td><input id="dc_tax_inc" placeholder="39,576" oninput="recalc()"/></td>
+              <td><input id="dc_tax_inc" placeholder="NIL" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
               <td>Interest payable to financial institutions, scheduled banks, NBFCs or money lenders on construction funding</td>
               <td><input id="dc_int_est" placeholder="NIL" oninput="recalc()"/></td>
-              <td><input id="dc_int_inc" placeholder="64,177" oninput="recalc()"/></td>
+              <td><input id="dc_int_inc" placeholder="NIL" oninput="recalc()"/></td>
             </tr>
             <tr class="subtotal">
               <td></td>
@@ -320,7 +323,7 @@
             <tr>
               <td></td>
               <td>Percentage of completion of construction work (as per Project Architect's Certificate)</td>
-              <td colspan="2"><input id="arch_pct" placeholder="96.28" oninput="recalc()" style="max-width:140px"/> %</td>
+              <td colspan="2"><input id="arch_pct" placeholder="75.00" oninput="recalc()" style="max-width:140px"/> %</td>
             </tr>
             <tr class="result-row">
               <td></td>
@@ -345,7 +348,7 @@
             <tr>
               <td></td>
               <td>Less: Amount withdrawn till date (as per Books of Accounts and Bank Statement)</td>
-              <td colspan="2"><input id="withdrawn" placeholder="25,63,77,752" oninput="recalc()" style="max-width:200px"/></td>
+              <td colspan="2"><input id="withdrawn" placeholder="25,00,00,000" oninput="recalc()" style="max-width:200px"/></td>
             </tr>
             <tr class="result-row">
               <td></td>
@@ -353,53 +356,80 @@
               <td colspan="2"><input id="net_withdrawable" class="auto" readonly tabindex="-1"/></td>
             </tr>
 
-            <tr class="section-head">
-              <td>2</td><td colspan="3">Borrowings / Mortgage Details (If Applicable)</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>
-                <b>A. Borrowing Details</b><br/>
-                1. Name of the Lender: <input id="lender" placeholder="NIL" style="width:200px;display:inline-block"/><br/>
-                2. Amount Disbursed: <input id="amt_disbursed" placeholder="NIL" style="width:200px;display:inline-block"/><br/>
-                3. Amount pending for disbursement: <input id="pending_disb" placeholder="NIL" style="width:200px;display:inline-block"/><br/>
-                4. Amount to be repaid to lender: <input id="amt_repay" placeholder="NIL" style="width:200px;display:inline-block"/>
-              </td>
-              <td colspan="2"></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>
-                <b>B. Mortgage Details</b><br/>
-                1. Mortgaged to (Name of Entity/Institution): <input id="mortgaged_to" placeholder="NIL" style="width:200px;display:inline-block"/><br/>
-                2. Amount Disbursed: <input id="m_amt_disbursed" placeholder="NIL" style="width:200px;display:inline-block"/><br/>
-                3. Amount pending for disbursement: <input id="m_pending" placeholder="NIL" style="width:200px;display:inline-block"/><br/>
-                4. Amount to be repaid to lender: <input id="m_repay" placeholder="NIL" style="width:200px;display:inline-block"/>
-              </td>
-              <td colspan="2"></td>
-            </tr>
           </tbody>
         </table>
       </div>
       <div class="nav">
         <button type="button" class="btn btn-sec" onclick="prev(2)">← Back</button>
-        <button type="button" class="btn btn-pri" onclick="next(2)">Next: Bank Transactions →</button>
+        <button type="button" class="btn btn-pri" onclick="next(2)">Next: Borrowings →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ STEP 3: Bank Transactions ══════════════════ -->
+    <!-- ═══════════════════════════════ STEP 3: Borrowings ══════════════════════ -->
     <div class="panel" id="p3">
       <div class="card">
-        <div class="card-title"><span class="badge">4</span> Details of Transactions in Designated RERA Bank Account (Sl. No. 3)</div>
+        <div class="card-title"><span class="badge">4</span> Borrowings / Mortgage Details (If Applicable)</div>
+        <div class="info">If there are no borrowings or mortgage, leave all fields as NIL. You can also upload an Excel file with borrowing details.</div>
+
+        <!-- Borrowings File Upload -->
+        <div class="upload-zone" id="borrowUploadZone"
+             ondragover="handleBorrowDragOver(event)" ondragleave="handleBorrowDragLeave(event)" ondrop="handleBorrowDrop(event)"
+             onclick="document.getElementById('borrowXlsxInput').click()">
+          <input type="file" id="borrowXlsxInput" accept=".xlsx,.xls,.csv" onchange="handleBorrowFileSelect(event)"/>
+          <div class="uz-icon">📋</div>
+          <div class="uz-title">Upload Borrowings / Mortgage File (Optional)</div>
+          <div class="uz-sub">Drag &amp; drop your file here, or click to browse</div>
+          <div class="uz-sub" style="margin-top:4px">
+            Expected columns: <b>Field</b> | <b>Value</b>
+            <span class="template-link" onclick="event.stopPropagation(); downloadBorrowingsTemplate()">⬇ Download Template</span>
+          </div>
+          <button class="uz-btn" onclick="event.stopPropagation(); document.getElementById('borrowXlsxInput').click()">Choose File</button>
+        </div>
+        <div class="upload-status" id="borrowUploadStatus"></div>
+
+        <div class="sub-heading">A. Borrowing Details</div>
+        <div class="grid g2">
+          <div class="fg full"><label>1. Name of the Lender</label>
+            <input id="lender" placeholder="NIL"/></div>
+          <div class="fg"><label>2. Amount Disbursed (₹)</label>
+            <input id="amt_disbursed" placeholder="NIL"/></div>
+          <div class="fg"><label>3. Amount Pending for Disbursement from Lender (₹)</label>
+            <input id="pending_disb" placeholder="NIL"/></div>
+          <div class="fg"><label>4. Amount to be Repaid to Lender (₹)</label>
+            <input id="amt_repay" placeholder="NIL"/></div>
+        </div>
+
+        <div class="sub-heading">B. Mortgage Details</div>
+        <div class="grid g2">
+          <div class="fg full"><label>1. Mortgaged to (Name of Entity / Institution)</label>
+            <input id="mortgaged_to" placeholder="NIL"/></div>
+          <div class="fg"><label>2. Amount Disbursed (₹)</label>
+            <input id="m_amt_disbursed" placeholder="NIL"/></div>
+          <div class="fg"><label>3. Amount Pending for Disbursement (₹)</label>
+            <input id="m_pending" placeholder="NIL"/></div>
+          <div class="fg"><label>4. Amount to be Repaid to Lender (₹)</label>
+            <input id="m_repay" placeholder="NIL"/></div>
+        </div>
+      </div>
+      <div class="nav">
+        <button type="button" class="btn btn-sec" onclick="prev(3)">← Back</button>
+        <button type="button" class="btn btn-pri" onclick="next(3)">Next: Bank Transactions →</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════ STEP 4: Bank Transactions ══════════════════ -->
+    <div class="panel" id="p4">
+      <div class="card">
+        <div class="card-title"><span class="badge">5</span> Details of Transactions in Designated RERA Bank Account (Sl. No. 3)</div>
 
         <div class="sub-heading">Quarterly Summary</div>
         <div class="grid g2">
           <div class="fg"><label>Total Number of Units Booked (quarter)</label>
-            <input id="units_booked" placeholder="30 Units"/></div>
+            <input id="units_booked" placeholder="30"/></div>
           <div class="fg"><label>Total Amount Realized from Sale of Units (quarter) (₹)</label>
-            <input id="total_realized" placeholder="3,59,53,792" oninput="recalc()"/></div>
+            <input id="total_realized" placeholder="3,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total Amount Deposited into Bank (quarter) (₹)</label>
-            <input id="total_deposited" placeholder="2,51,67,654" oninput="recalc()"/></div>
+            <input id="total_deposited" placeholder="2,10,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>% of Deposit Made <span class="calc">● Auto</span></label>
             <input id="pct_deposited" class="auto" readonly tabindex="-1"/></div>
         </div>
@@ -409,15 +439,15 @@
           <div class="fg"><label>Opening Balance Date</label>
             <input id="q_open_date" placeholder="01st October 2025"/></div>
           <div class="fg"><label>Opening Balance (₹)</label>
-            <input id="q_open_bal" placeholder="1,32,56,873" oninput="recalc()"/></div>
+            <input id="q_open_bal" placeholder="1,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Deposits from Sales during Quarter (₹)</label>
-            <input id="q_dep_sales" placeholder="4,03,14,043" oninput="recalc()"/></div>
+            <input id="q_dep_sales" placeholder="4,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Other Deposits (₹)</label>
-            <input id="q_dep_other" placeholder="NIL or amount" oninput="recalc()"/></div>
+            <input id="q_dep_other" placeholder="NIL" oninput="recalc()"/></div>
           <div class="fg"><label>Withdrawals from Sale Proceeds (₹)</label>
-            <input id="q_wdl_sales" placeholder="5,04,32,472" oninput="recalc()"/></div>
+            <input id="q_wdl_sales" placeholder="5,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Other Withdrawals (₹)</label>
-            <input id="q_wdl_other" placeholder="5,00,000" oninput="recalc()"/></div>
+            <input id="q_wdl_other" placeholder="NIL" oninput="recalc()"/></div>
           <div class="fg"><label>Closing Balance (₹) <span class="calc">● Auto = Open + Dep − Wdl</span></label>
             <input id="q_close_bal" class="auto" readonly tabindex="-1"/></div>
           <div class="fg"><label>Closing Balance Date</label>
@@ -427,29 +457,29 @@
         <div class="sub-heading">Cumulative Reconciliation (From Project Beginning till Quarter End)</div>
         <div class="grid g2">
           <div class="fg"><label>Opening Balance of Account (₹)</label>
-            <input id="c_open_bal" placeholder="1,32,56,873" oninput="recalc()"/></div>
+            <input id="c_open_bal" placeholder="0" oninput="recalc()"/></div>
           <div class="fg"><label>Total Deposits from Sale Proceeds (incl. old RERA account) (₹)</label>
-            <input id="c_dep_sales" placeholder="16,03,54,406" oninput="recalc()"/></div>
+            <input id="c_dep_sales" placeholder="16,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total Deposits other than Sale Proceeds (₹)</label>
-            <input id="c_dep_other" placeholder="50,63,049" oninput="recalc()"/></div>
+            <input id="c_dep_other" placeholder="50,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total Withdrawals from Sale Proceeds incl. returns (₹)</label>
-            <input id="c_wdl_sales" placeholder="17,04,72,836" oninput="recalc()"/></div>
+            <input id="c_wdl_sales" placeholder="17,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total Withdrawals other than Sale Proceeds (₹)</label>
-            <input id="c_wdl_other" placeholder="50,63,049" oninput="recalc()"/></div>
+            <input id="c_wdl_other" placeholder="50,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Closing Balance for Current Quarter (₹) <span class="calc">● Auto</span></label>
             <input id="c_close_bal" class="auto" readonly tabindex="-1"/></div>
         </div>
       </div>
       <div class="nav">
-        <button type="button" class="btn btn-sec" onclick="prev(3)">← Back</button>
-        <button type="button" class="btn btn-pri" onclick="next(3)">Next: Receivables →</button>
+        <button type="button" class="btn btn-sec" onclick="prev(4)">← Back</button>
+        <button type="button" class="btn btn-pri" onclick="next(4)">Next: Receivables →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ STEP 4: Receivables ════════════════════════ -->
-    <div class="panel" id="p4">
+    <!-- ═══════════════════════════════ STEP 5: Receivables ════════════════════════ -->
+    <div class="panel" id="p5">
       <div class="card">
-        <div class="card-title"><span class="badge">5</span> Additional Information — Receivables Statement</div>
+        <div class="card-title"><span class="badge">6</span> Additional Information — Receivables Statement</div>
         <div class="info">These values feed into the amount to be deposited calculation. Balance receivables from Sold Inventory is auto-summed from Annexure A.</div>
 
         <table class="cost-tbl">
@@ -490,15 +520,15 @@
         </table>
       </div>
       <div class="nav">
-        <button type="button" class="btn btn-sec" onclick="prev(4)">← Back</button>
-        <button type="button" class="btn btn-pri" onclick="next(4)">Next: Sold Inventory →</button>
+        <button type="button" class="btn btn-sec" onclick="prev(5)">← Back</button>
+        <button type="button" class="btn btn-pri" onclick="next(5)">Next: Sold Inventory →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ STEP 5: Sold Inventory ═════════════════════ -->
-    <div class="panel" id="p5">
+    <!-- ═══════════════════════════════ STEP 6: Sold Inventory ═════════════════════ -->
+    <div class="panel" id="p6">
       <div class="card">
-        <div class="card-title"><span class="badge">6</span> Annexure A — Sold Inventory (Statement of Receivables)</div>
+        <div class="card-title"><span class="badge">7</span> Annexure A — Sold Inventory (Statement of Receivables)</div>
 
         <!-- Excel Upload Zone -->
         <div class="upload-zone" id="uploadZone"
@@ -539,37 +569,37 @@
         <button type="button" class="add-btn" onclick="addSoldRow()">+ Add Row Manually</button>
       </div>
       <div class="nav">
-        <button type="button" class="btn btn-sec" onclick="prev(5)">← Back</button>
-        <button type="button" class="btn btn-pri" onclick="next(5)">Next: Unsold Inventory →</button>
+        <button type="button" class="btn btn-sec" onclick="prev(6)">← Back</button>
+        <button type="button" class="btn btn-pri" onclick="next(6)">Next: Unsold Inventory →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ STEP 6: Unsold Inventory ═══════════════════ -->
-    <div class="panel" id="p6">
+    <!-- ═══════════════════════════════ STEP 7: Unsold Inventory ═══════════════════ -->
+    <div class="panel" id="p7">
       <div class="card">
-        <div class="card-title"><span class="badge">7</span> Unsold Inventory Valuation</div>
+        <div class="card-title"><span class="badge">8</span> Unsold Inventory Valuation</div>
         <div class="info">In the actual form, unsold inventory is summarised as totals (total flats, total area, ASR rate, total ASR). The Total ASR = Total Area × ASR Rate is auto-calculated.</div>
         <div class="grid g3">
           <div class="fg"><label>Ready Reckoner Rate (₹ per sq.mt.) <span class="req">*</span></label>
-            <input id="asr_rate" placeholder="46,374" oninput="recalc()"/></div>
+            <input id="asr_rate" placeholder="50,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total Number of Unsold Flats</label>
             <input id="unsold_flats" placeholder="50" oninput="recalc()"/></div>
           <div class="fg"><label>Total Unsold Carpet Area (sq.mts.) <span class="req">*</span></label>
-            <input id="unsold_total_area" placeholder="3,840" oninput="recalc()"/></div>
+            <input id="unsold_total_area" placeholder="4,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total ASR Consideration (₹) <span class="calc">● Auto = Area × Rate</span></label>
             <input id="unsold_total_asr" class="auto" readonly tabindex="-1"/></div>
         </div>
       </div>
       <div class="nav">
-        <button type="button" class="btn btn-sec" onclick="prev(6)">← Back</button>
-        <button type="button" class="btn btn-pri" onclick="next(6)">Next: CA Details →</button>
+        <button type="button" class="btn btn-sec" onclick="prev(7)">← Back</button>
+        <button type="button" class="btn btn-pri" onclick="next(7)">Next: CA Details →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ STEP 7: CA Details ═════════════════════════ -->
-    <div class="panel" id="p7">
+    <!-- ═══════════════════════════════ STEP 8: CA Details ═════════════════════════ -->
+    <div class="panel" id="p8">
       <div class="card">
-        <div class="card-title"><span class="badge">8</span> Chartered Accountant Details</div>
+        <div class="card-title"><span class="badge">9</span> Chartered Accountant Details</div>
         <div class="grid g2">
           <div class="fg"><label>Firm Name</label><input id="firm_name" value="PVKR & Co LLP"/></div>
           <div class="fg"><label>FRN</label><input id="frn" placeholder="S000051"/></div>
@@ -584,15 +614,15 @@
         </div>
       </div>
       <div class="nav">
-        <button type="button" class="btn btn-sec" onclick="prev(7)">← Back</button>
-        <button type="button" class="btn btn-pri" onclick="next(7)">Review &amp; Generate →</button>
+        <button type="button" class="btn btn-sec" onclick="prev(8)">← Back</button>
+        <button type="button" class="btn btn-pri" onclick="next(8)">Review &amp; Generate →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ STEP 8: Review & Generate ══════════════════ -->
-    <div class="panel" id="p8">
+    <!-- ═══════════════════════════════ STEP 9: Review & Generate ══════════════════ -->
+    <div class="panel" id="p9">
       <div class="card">
-        <div class="card-title"><span class="badge">9</span> Review &amp; Generate Word Document</div>
+        <div class="card-title"><span class="badge">10</span> Review &amp; Generate Word Document</div>
         <div id="reviewContent"></div>
         <div class="gen-box">
           <h3>Ready to Generate RERA Form 4</h3>
@@ -601,7 +631,7 @@
         </div>
       </div>
       <div class="nav">
-        <button type="button" class="btn btn-sec" onclick="prev(8)">← Back to Edit</button>
+        <button type="button" class="btn btn-sec" onclick="prev(9)">← Back to Edit</button>
         <span></span>
       </div>
     </div>
@@ -626,7 +656,7 @@ function gotoStep(s) {
   });
   curStep = s;
   document.getElementById(`p${s}`).classList.add('active');
-  if(s === 8) buildReview();
+  if(s === 9) buildReview();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function next(s){ gotoStep(s+1); }
@@ -821,7 +851,7 @@ function getSoldRows() {
 // ─── Collect all data ──────────────────────────────────────────────────────────
 function collectData() {
   const ids = [
-    'krera_reg','cert_date','project_name','promoter_name','project_cost','project_cost_words','quarter_end','place','observations',
+    'krera_reg','cert_date','quarter_label','project_name','promoter_name','project_cost','project_cost_words','quarter_end','place','observations',
     'b1_holder','b1_krbad','b1_acno','b1_bank','b1_ifsc','b1_branch',
     'b2_holder','b2_krbad','b2_acno','b2_bank','b2_ifsc','b2_branch',
     'b3_holder','b3_krbad','b3_acno','b3_bank','b3_ifsc','b3_branch',
@@ -854,7 +884,8 @@ function buildReview() {
     <div class="rv-sec"><h3>Project</h3><div class="rv-grid">
       ${row('KRERA Reg.', d.krera_reg)} ${row('Date', d.cert_date)}
       ${row('Project', d.project_name)} ${row('Promoter', d.promoter_name)}
-      ${row('Cost (₹)', d.project_cost)} ${row('Quarter End', d.quarter_end)}
+      ${row('Cost (₹)', d.project_cost)} ${row('Quarter', d.quarter_label)}
+      ${row('Quarter End', d.quarter_end)}
     </div></div>
     <div class="rv-sec"><h3>Cost Statement (Auto-calculated)</h3><div class="rv-grid">
       ${row('Sub-Total Land (Est)', d.lc_total_est)} ${row('Sub-Total Land (Inc)', d.lc_total_inc)}
@@ -1054,20 +1085,112 @@ function formatExcelDate(val) {
   return String(val).trim();
 }
 
-// ─── Download Template ─────────────────────────────────────────────────────────
+// ─── Download Sold Inventory Template ──────────────────────────────────────────
 function downloadTemplate() {
   const headers = ['Flat No.', 'Carpet Area (sq.mts.)', 'Agreement Price (₹)', 'Received Amount (₹)', 'Date of Agreement', 'Registered (YES/NO)'];
   const sampleRows = [
-    ['FF04', '93.95', '8279214', '6542190', '15-03-2024', 'NO'],
-    ['SF01', '67.44', '6931429', '5142857', '26-03-2024', 'NO'],
-    ['SF06', '72.46', '7374000', '5899200', '25-07-2024', 'NO'],
+    ['FF01', '95', '80,00,000', '60,00,000', '15-03-2024', 'YES'],
+    ['FF02', '70', '60,00,000', '45,00,000', '20-04-2024', 'NO'],
+    ['SF01', '80', '70,00,000', '50,00,000', '10-06-2024', 'NO'],
   ];
   const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleRows]);
-  // Column widths
   ws['!cols'] = [14,20,20,20,20,20].map(w => ({wch:w}));
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Sold Inventory');
   XLSX.writeFile(wb, 'RERA_Form4_Sold_Inventory_Template.xlsx');
+}
+
+// ─── Borrowings File Upload ─────────────────────────────────────────────────────
+function handleBorrowDragOver(e) {
+  e.preventDefault();
+  document.getElementById('borrowUploadZone').classList.add('drag-over');
+}
+function handleBorrowDragLeave(e) {
+  document.getElementById('borrowUploadZone').classList.remove('drag-over');
+}
+function handleBorrowDrop(e) {
+  e.preventDefault();
+  document.getElementById('borrowUploadZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) processBorrowingsFile(file);
+}
+function handleBorrowFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processBorrowingsFile(file);
+  e.target.value = '';
+}
+
+// Borrowings field map: normalised label → element id
+const BORROW_MAP = {
+  'name of lender': 'lender', 'lender': 'lender', 'lender name': 'lender',
+  'amount disbursed': 'amt_disbursed', 'disbursed amount': 'amt_disbursed',
+  'amount disbursed (borrowing)': 'amt_disbursed',
+  'amount pending': 'pending_disb', 'amount pending for disbursement': 'pending_disb',
+  'pending disbursement': 'pending_disb', 'amount pending disbursement (borrowing)': 'pending_disb',
+  'amount to be repaid': 'amt_repay', 'amount repaid': 'amt_repay',
+  'amount to repay': 'amt_repay', 'amount to be repaid (borrowing)': 'amt_repay',
+  'name of mortgagee': 'mortgaged_to', 'mortgaged to': 'mortgaged_to',
+  'name of institution': 'mortgaged_to', 'mortgagee': 'mortgaged_to',
+  'name of mortgagee (institution)': 'mortgaged_to',
+  'amount disbursed (mortgage)': 'm_amt_disbursed', 'mortgage amount disbursed': 'm_amt_disbursed',
+  'amount pending disbursement (mortgage)': 'm_pending', 'mortgage amount pending': 'm_pending',
+  'amount to be repaid (mortgage)': 'm_repay', 'mortgage amount to repay': 'm_repay',
+};
+
+function processBorrowingsFile(file) {
+  const status = document.getElementById('borrowUploadStatus');
+  status.className = 'upload-status';
+  status.style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      if (rows.length < 2) throw new Error('File is empty or has no data rows.');
+
+      let filled = 0;
+      rows.forEach(row => {
+        const fieldRaw = String(row[0] || '').toLowerCase().trim();
+        const val = String(row[1] || '').trim();
+        if (!fieldRaw || !val) return;
+        const targetId = BORROW_MAP[fieldRaw];
+        if (targetId && document.getElementById(targetId)) {
+          document.getElementById(targetId).value = val;
+          filled++;
+        }
+      });
+
+      status.className = 'upload-status success';
+      status.innerHTML = `✅ Imported borrowings data from <b>${file.name}</b> — ${filled} field(s) filled.`;
+      status.style.display = 'flex';
+    } catch(err) {
+      status.className = 'upload-status error';
+      status.innerHTML = `❌ ${err.message}`;
+      status.style.display = 'flex';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function downloadBorrowingsTemplate() {
+  const rows = [
+    ['Field', 'Value'],
+    ['Name of Lender', 'NIL'],
+    ['Amount Disbursed', 'NIL'],
+    ['Amount Pending for Disbursement', 'NIL'],
+    ['Amount to be Repaid', 'NIL'],
+    ['Name of Mortgagee (Institution)', 'NIL'],
+    ['Amount Disbursed (Mortgage)', 'NIL'],
+    ['Amount Pending Disbursement (Mortgage)', 'NIL'],
+    ['Amount to be Repaid (Mortgage)', 'NIL'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:40}, {wch:25}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Borrowings');
+  XLSX.writeFile(wb, 'RERA_Form4_Borrowings_Template.xlsx');
 }
 </script>
 </body>
