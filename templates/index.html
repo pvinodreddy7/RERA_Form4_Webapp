@@ -93,6 +93,13 @@
     .upload-status.error{background:#fde8e8;color:#922b21;border:1.5px solid #f1948a;display:flex;align-items:center;gap:8px}
     .template-link{font-size:.78rem;color:#2980b9;cursor:pointer;text-decoration:underline;margin-left:8px}
 
+    /* Observation template chips */
+    .obs-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+    .obs-chip{background:#f0f7ff;color:#1a5276;border:1.5px solid #aed6f1;border-radius:20px;padding:5px 13px;font-size:.77rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .obs-chip:hover{background:#d6eaf8;border-color:#2980b9}
+    .obs-chip.danger{background:#fff3f3;border-color:#f1948a;color:#922b21}
+    .obs-chip.danger:hover{background:#fde8e8}
+
     /* Nav */
     .nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
     .btn{padding:10px 24px;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
@@ -151,6 +158,31 @@
 
     <!-- ═══════════════════════════════ STEP 0: Project Info ═══════════════════════ -->
     <div class="panel active" id="p0">
+
+      <!-- Metadata Upload Card -->
+      <div class="card">
+        <div class="card-title">
+          <span class="badge" style="width:auto;padding:0 7px;border-radius:10px;font-size:.65rem">META</span>
+          Project Metadata Upload
+          <span style="font-size:.78rem;font-weight:400;color:#888;margin-left:4px">(Optional — auto-populates all fields)</span>
+        </div>
+        <div class="info">
+          Upload the metadata template to auto-fill project details, CA information, bank accounts and more. Fields remain editable after upload.
+          <span class="template-link" onclick="downloadMetaTemplate()">⬇ Download Metadata Template</span>
+        </div>
+        <div class="upload-zone" id="metaUploadZone"
+             ondragover="handleMetaDragOver(event)" ondragleave="handleMetaDragLeave(event)" ondrop="handleMetaDrop(event)"
+             onclick="document.getElementById('metaXlsxInput').click()">
+          <input type="file" id="metaXlsxInput" accept=".xlsx,.xls,.csv" onchange="handleMetaFileSelect(event)"/>
+          <div class="uz-icon">🗂</div>
+          <div class="uz-title">Upload Project Metadata File</div>
+          <div class="uz-sub">Drag &amp; drop your metadata Excel here, or click to browse</div>
+          <button class="uz-btn" onclick="event.stopPropagation(); document.getElementById('metaXlsxInput').click()">Choose File</button>
+        </div>
+        <div class="upload-status" id="metaUploadStatus"></div>
+      </div>
+
+      <!-- Project Info Card -->
       <div class="card">
         <div class="card-title"><span class="badge">1</span> Project Information</div>
         <div class="grid g2">
@@ -173,10 +205,23 @@
           <div class="fg"><label>Place</label>
             <input id="place" value="Bangalore"/></div>
         </div>
+
         <div class="sub-heading">Qualification / Observations</div>
+        <div class="hint" style="margin-bottom:8px">Click a template below to append it to observations. Values are auto-filled from your form data.</div>
+        <div class="obs-chips">
+          <button type="button" class="obs-chip" onclick="addObsEstimatedCost()">📝 Estimated Cost Note</button>
+          <button type="button" class="obs-chip" onclick="addObsBankChange()">🏦 Bank Account Change</button>
+          <button type="button" class="obs-chip" onclick="addObsCollected()">💰 Collected &amp; Deposited</button>
+          <button type="button" class="obs-chip" onclick="addObsArchitect()">🏗 Architect's Certificate</button>
+          <button type="button" class="obs-chip" onclick="addObsWithdrawable()">📊 Withdrawable Amount</button>
+          <button type="button" class="obs-chip" onclick="addObsCompliance()">✅ RERA Compliance</button>
+          <button type="button" class="obs-chip danger" onclick="clearObs()">🗑 Clear All</button>
+        </div>
         <div class="grid g1">
-          <div class="fg"><label>Observation / Notes (will appear in the certificate)</label>
-            <textarea id="observations" rows="5" placeholder="The estimated cost of the project is considered as ₹ 39,94,20,048/-. The promoter is undertaking the change of estimated cost with RERA accordingly.&#10;The promoters have applied for a change of RERA designated bank account...&#10;I hereby certify that the total amount collected / Realized from the allottees on account of sale / booking of units during the quarter is ₹ X out of which ₹ Y is deposited into the project designated bank account..."></textarea></div>
+          <div class="fg">
+            <label>Observation / Notes (will appear in the certificate)</label>
+            <textarea id="observations" rows="6" placeholder="Click a template above or type your observations here..."></textarea>
+          </div>
         </div>
       </div>
       <div class="nav"><span></span><button type="button" class="btn btn-pri" onclick="next(0)">Next: Bank Accounts →</button></div>
@@ -190,32 +235,32 @@
 
         <div class="sub-heading">Account 1 — 100% Collection Account</div>
         <div class="grid g2">
-          <div class="fg full"><label>Account Holder Name</label><input id="b1_holder" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
+          <div class="fg full"><label>Account Holder Name</label><input id="b1_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
           <div class="fg full"><label>Account Name as per KRERA</label><input id="b1_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD RERA COLLECTION ACCOUNT ABC RESIDENCY – 100%"/></div>
-          <div class="fg"><label>Account Number</label><input id="b1_acno" placeholder="923020023210266"/></div>
+          <div class="fg"><label>Account Number</label><input id="b1_acno" placeholder="000000000000001"/></div>
           <div class="fg"><label>Bank Name</label><input id="b1_bank" placeholder="Axis Bank"/></div>
-          <div class="fg"><label>IFSC Code</label><input id="b1_ifsc" placeholder="UTIB0000734"/></div>
-          <div class="fg"><label>Branch Name</label><input id="b1_branch" placeholder="Kalyan Nagar"/></div>
+          <div class="fg"><label>IFSC Code</label><input id="b1_ifsc" placeholder="UTIB0000001"/></div>
+          <div class="fg"><label>Branch Name</label><input id="b1_branch" placeholder="Bangalore Branch"/></div>
         </div>
 
         <div class="sub-heading">Account 2 — 70% Designated Account</div>
         <div class="grid g2">
-          <div class="fg full"><label>Account Holder Name</label><input id="b2_holder" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
+          <div class="fg full"><label>Account Holder Name</label><input id="b2_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
           <div class="fg full"><label>Account Name as per KRERA</label><input id="b2_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA DESIGNATED ACCOUNT - 70%"/></div>
-          <div class="fg"><label>Account Number</label><input id="b2_acno" placeholder="923020029328233"/></div>
+          <div class="fg"><label>Account Number</label><input id="b2_acno" placeholder="000000000000002"/></div>
           <div class="fg"><label>Bank Name</label><input id="b2_bank" placeholder="Axis Bank"/></div>
-          <div class="fg"><label>IFSC Code</label><input id="b2_ifsc" placeholder="UTIB0000734"/></div>
-          <div class="fg"><label>Branch Name</label><input id="b2_branch" placeholder="Kalyan Nagar"/></div>
+          <div class="fg"><label>IFSC Code</label><input id="b2_ifsc" placeholder="UTIB0000001"/></div>
+          <div class="fg"><label>Branch Name</label><input id="b2_branch" placeholder="Bangalore Branch"/></div>
         </div>
 
         <div class="sub-heading">Account 3 — 30% Account</div>
         <div class="grid g2">
-          <div class="fg full"><label>Account Holder Name</label><input id="b3_holder" placeholder="S K BUILDERS AND DEVELOPERS INC"/></div>
+          <div class="fg full"><label>Account Holder Name</label><input id="b3_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
           <div class="fg full"><label>Account Name as per KRERA</label><input id="b3_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA ACCOUNT - 30%"/></div>
-          <div class="fg"><label>Account Number</label><input id="b3_acno" placeholder="923020023416406"/></div>
+          <div class="fg"><label>Account Number</label><input id="b3_acno" placeholder="000000000000003"/></div>
           <div class="fg"><label>Bank Name</label><input id="b3_bank" placeholder="Axis Bank"/></div>
-          <div class="fg"><label>IFSC Code</label><input id="b3_ifsc" placeholder="UTIB0000734"/></div>
-          <div class="fg"><label>Branch Name</label><input id="b3_branch" placeholder="Kalyan Nagar"/></div>
+          <div class="fg"><label>IFSC Code</label><input id="b3_ifsc" placeholder="UTIB0000001"/></div>
+          <div class="fg"><label>Branch Name</label><input id="b3_branch" placeholder="Bangalore Branch"/></div>
         </div>
       </div>
       <div class="nav">
@@ -252,8 +297,8 @@
             <tr>
               <td></td>
               <td>b) Amount paid for Acquisition / purchase of TDR (if any)</td>
-              <td><input id="lc_b_est" placeholder="NIL" oninput="recalc()"/></td>
-              <td><input id="lc_b_inc" placeholder="NIL" oninput="recalc()"/></td>
+              <td><input id="lc_b_est" placeholder="0" oninput="recalc()"/></td>
+              <td><input id="lc_b_inc" placeholder="0" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
@@ -286,20 +331,20 @@
             <tr>
               <td></td>
               <td>(iii) On-site expenditure for development of entire project excluding cost of construction (salaries, consultants, site overheads, development works, water, electricity, sewerage, roads, machinery, consumables etc.)</td>
-              <td><input id="dc_iii_est" placeholder="NIL" oninput="recalc()"/></td>
+              <td><input id="dc_iii_est" placeholder="0" oninput="recalc()"/></td>
               <td><input id="dc_iii_inc" placeholder="4,00,00,000" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
               <td>Payment of Taxes, cess, fees, charges, premiums, interest etc. to any statutory authority</td>
-              <td><input id="dc_tax_est" placeholder="NIL" oninput="recalc()"/></td>
-              <td><input id="dc_tax_inc" placeholder="NIL" oninput="recalc()"/></td>
+              <td><input id="dc_tax_est" placeholder="0" oninput="recalc()"/></td>
+              <td><input id="dc_tax_inc" placeholder="0" oninput="recalc()"/></td>
             </tr>
             <tr>
               <td></td>
               <td>Interest payable to financial institutions, scheduled banks, NBFCs or money lenders on construction funding</td>
-              <td><input id="dc_int_est" placeholder="NIL" oninput="recalc()"/></td>
-              <td><input id="dc_int_inc" placeholder="NIL" oninput="recalc()"/></td>
+              <td><input id="dc_int_est" placeholder="0" oninput="recalc()"/></td>
+              <td><input id="dc_int_inc" placeholder="0" oninput="recalc()"/></td>
             </tr>
             <tr class="subtotal">
               <td></td>
@@ -369,7 +414,7 @@
     <div class="panel" id="p3">
       <div class="card">
         <div class="card-title"><span class="badge">4</span> Borrowings / Mortgage Details (If Applicable)</div>
-        <div class="info">If there are no borrowings or mortgage, leave all fields as NIL. You can also upload an Excel file with borrowing details.</div>
+        <div class="info">Add multiple borrowing and mortgage entries using the tables below. You can also upload an Excel file with multiple rows.</div>
 
         <!-- Borrowings File Upload -->
         <div class="upload-zone" id="borrowUploadZone"
@@ -380,7 +425,7 @@
           <div class="uz-title">Upload Borrowings / Mortgage File (Optional)</div>
           <div class="uz-sub">Drag &amp; drop your file here, or click to browse</div>
           <div class="uz-sub" style="margin-top:4px">
-            Expected columns: <b>Field</b> | <b>Value</b>
+            Columns: <b>Section</b> (Borrowing/Mortgage) | <b>Name</b> | <b>Amount Disbursed</b> | <b>Amount Pending</b> | <b>Amount to Repay</b>
             <span class="template-link" onclick="event.stopPropagation(); downloadBorrowingsTemplate()">⬇ Download Template</span>
           </div>
           <button class="uz-btn" onclick="event.stopPropagation(); document.getElementById('borrowXlsxInput').click()">Choose File</button>
@@ -388,28 +433,40 @@
         <div class="upload-status" id="borrowUploadStatus"></div>
 
         <div class="sub-heading">A. Borrowing Details</div>
-        <div class="grid g2">
-          <div class="fg full"><label>1. Name of the Lender</label>
-            <input id="lender" placeholder="NIL"/></div>
-          <div class="fg"><label>2. Amount Disbursed (₹)</label>
-            <input id="amt_disbursed" placeholder="NIL"/></div>
-          <div class="fg"><label>3. Amount Pending for Disbursement from Lender (₹)</label>
-            <input id="pending_disb" placeholder="NIL"/></div>
-          <div class="fg"><label>4. Amount to be Repaid to Lender (₹)</label>
-            <input id="amt_repay" placeholder="NIL"/></div>
+        <div class="inv-wrap">
+          <table class="inv-tbl" id="borrowTbl">
+            <thead>
+              <tr>
+                <th style="width:36px">Sr.</th>
+                <th>Name of Lender</th>
+                <th style="width:155px">Amount Disbursed (₹)</th>
+                <th style="width:165px">Amount Pending for Disbursement (₹)</th>
+                <th style="width:155px">Amount to be Repaid (₹)</th>
+                <th style="width:44px">Del</th>
+              </tr>
+            </thead>
+            <tbody id="borrowBody"></tbody>
+          </table>
         </div>
+        <button type="button" class="add-btn" onclick="addBorrowRow()">+ Add Borrowing</button>
 
         <div class="sub-heading">B. Mortgage Details</div>
-        <div class="grid g2">
-          <div class="fg full"><label>1. Mortgaged to (Name of Entity / Institution)</label>
-            <input id="mortgaged_to" placeholder="NIL"/></div>
-          <div class="fg"><label>2. Amount Disbursed (₹)</label>
-            <input id="m_amt_disbursed" placeholder="NIL"/></div>
-          <div class="fg"><label>3. Amount Pending for Disbursement (₹)</label>
-            <input id="m_pending" placeholder="NIL"/></div>
-          <div class="fg"><label>4. Amount to be Repaid to Lender (₹)</label>
-            <input id="m_repay" placeholder="NIL"/></div>
+        <div class="inv-wrap">
+          <table class="inv-tbl" id="mortgageTbl">
+            <thead>
+              <tr>
+                <th style="width:36px">Sr.</th>
+                <th>Mortgaged To (Name of Entity / Institution)</th>
+                <th style="width:155px">Amount Disbursed (₹)</th>
+                <th style="width:165px">Amount Pending for Disbursement (₹)</th>
+                <th style="width:155px">Amount to be Repaid (₹)</th>
+                <th style="width:44px">Del</th>
+              </tr>
+            </thead>
+            <tbody id="mortgageBody"></tbody>
+          </table>
         </div>
+        <button type="button" class="add-btn" onclick="addMortgageRow()">+ Add Mortgage</button>
       </div>
       <div class="nav">
         <button type="button" class="btn btn-sec" onclick="prev(3)">← Back</button>
@@ -443,11 +500,11 @@
           <div class="fg"><label>Deposits from Sales during Quarter (₹)</label>
             <input id="q_dep_sales" placeholder="4,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Other Deposits (₹)</label>
-            <input id="q_dep_other" placeholder="NIL" oninput="recalc()"/></div>
+            <input id="q_dep_other" placeholder="0" oninput="recalc()"/></div>
           <div class="fg"><label>Withdrawals from Sale Proceeds (₹)</label>
             <input id="q_wdl_sales" placeholder="5,00,00,000" oninput="recalc()"/></div>
           <div class="fg"><label>Other Withdrawals (₹)</label>
-            <input id="q_wdl_other" placeholder="NIL" oninput="recalc()"/></div>
+            <input id="q_wdl_other" placeholder="0" oninput="recalc()"/></div>
           <div class="fg"><label>Closing Balance (₹) <span class="calc">● Auto = Open + Dep − Wdl</span></label>
             <input id="q_close_bal" class="auto" readonly tabindex="-1"/></div>
           <div class="fg"><label>Closing Balance Date</label>
@@ -578,13 +635,15 @@
     <div class="panel" id="p7">
       <div class="card">
         <div class="card-title"><span class="badge">8</span> Unsold Inventory Valuation</div>
-        <div class="info">In the actual form, unsold inventory is summarised as totals (total flats, total area, ASR rate, total ASR). The Total ASR = Total Area × ASR Rate is auto-calculated.</div>
+        <div class="info">Set <b>Total Saleable Area</b> to auto-calculate unsold area (Saleable − Sold carpet area). Or enter unsold area manually. Total ASR = Unsold Area × ASR Rate.</div>
         <div class="grid g3">
+          <div class="fg"><label>Total Saleable Area of Project (sq.mts.) <span class="calc">● Sets unsold area auto-calc</span></label>
+            <input id="total_saleable_area" placeholder="0" oninput="recalc()"/></div>
           <div class="fg"><label>Ready Reckoner Rate (₹ per sq.mt.) <span class="req">*</span></label>
             <input id="asr_rate" placeholder="50,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total Number of Unsold Flats</label>
             <input id="unsold_flats" placeholder="50" oninput="recalc()"/></div>
-          <div class="fg"><label>Total Unsold Carpet Area (sq.mts.) <span class="req">*</span></label>
+          <div class="fg"><label>Total Unsold Carpet Area (sq.mts.) <span class="calc">● Auto if Saleable Area set above</span></label>
             <input id="unsold_total_area" placeholder="4,000" oninput="recalc()"/></div>
           <div class="fg"><label>Total ASR Consideration (₹) <span class="calc">● Auto = Area × Rate</span></label>
             <input id="unsold_total_asr" class="auto" readonly tabindex="-1"/></div>
@@ -671,7 +730,6 @@ function parseNum(v) {
 }
 function fmt(n, decimals=2) {
   if(n === 0) return '0';
-  // Indian number format
   const fixed = n.toFixed(decimals);
   const parts = fixed.split('.');
   let intPart = parts[0];
@@ -712,14 +770,13 @@ function recalc() {
   setAuto('lc_total_est', lc_tot_e);
   setAuto('lc_total_inc', lc_tot_i);
 
-  const dc_i_e  = parseNum(g('dc_i_est'));   // estimated only
-  const dc_ii_i = parseNum(g('dc_ii_inc'));  // incurred only — use min(i,ii) for incurred
+  const dc_i_e  = parseNum(g('dc_i_est'));
+  const dc_ii_i = parseNum(g('dc_ii_inc'));
   const dc_iii_e= parseNum(g('dc_iii_est')), dc_iii_i = parseNum(g('dc_iii_inc'));
   const dc_tax_e= parseNum(g('dc_tax_est')), dc_tax_i = parseNum(g('dc_tax_inc'));
   const dc_int_e= parseNum(g('dc_int_est')), dc_int_i = parseNum(g('dc_int_inc'));
 
   const dc_tot_e = dc_i_e + dc_iii_e + dc_tax_e + dc_int_e;
-  // incurred dev: use min(dc_i_e, dc_ii_i) for construction part
   const dc_const_i = dc_i_e > 0 && dc_ii_i > 0 ? Math.min(dc_i_e, dc_ii_i) : (dc_ii_i || dc_i_e);
   const dc_tot_i = dc_const_i + dc_iii_i + dc_tax_i + dc_int_i;
   setAuto('dc_total_est', dc_tot_e);
@@ -733,7 +790,7 @@ function recalc() {
   const arch_pct = parseNum(g('arch_pct')) / 100;
   const prop_land = total_est > 0 ? lc_tot_i / total_est : 0;
   const prop_dev  = total_est > 0 ? dc_tot_i / total_est : 0;
-  const ca_pct    = prop_land + prop_dev; // = total_inc / total_est
+  const ca_pct    = prop_land + prop_dev;
   setAuto('prop_land', prop_land * 100, true);
   setAuto('prop_dev',  prop_dev  * 100, true);
   setAuto('ca_pct',   ca_pct    * 100, true);
@@ -743,31 +800,36 @@ function recalc() {
   setAuto('withdrawable', withdrawable);
 
   const withdrawn = parseNum(g('withdrawn'));
-  const net_wdl = withdrawable - withdrawn;
-  setAuto('net_withdrawable', net_wdl);
+  setAuto('net_withdrawable', withdrawable - withdrawn);
 
-  // ── Receivables (Step 4) ──
-  const bal_cost = total_est - total_inc;
-  setAuto('bal_cost', bal_cost);
+  // ── Receivables ──
+  setAuto('bal_cost', total_est - total_inc);
 
-  // Sold inventory balance sum (from Annexure A)
   let soldTotal = 0;
+  let soldCarpetTotal = 0;
   document.querySelectorAll('#soldBody tr').forEach(tr => {
-    const bal = parseNum(tr.querySelector('.s-bal')?.value);
-    soldTotal += bal;
+    soldTotal += parseNum(tr.querySelector('.s-bal')?.value);
+    soldCarpetTotal += parseNum(tr.querySelector('.s-area')?.value);
   });
   setAuto('bal_receivables', soldTotal);
 
-  // Unsold inventory
-  const asr_rate   = parseNum(g('asr_rate'));
-  const unsold_area= parseNum(g('unsold_total_area'));
-  const unsold_asr = unsold_area * asr_rate;
+  // ── Unsold inventory — auto-compute unsold area if Total Saleable Area is set ──
+  const total_saleable = parseNum(g('total_saleable_area'));
+  if (total_saleable > 0) {
+    const computedUnsold = Math.max(0, total_saleable - soldCarpetTotal);
+    document.getElementById('unsold_total_area').value = fmt(computedUnsold);
+  }
+
+  const asr_rate    = parseNum(g('asr_rate'));
+  const unsold_area = parseNum(g('unsold_total_area'));
+  const unsold_asr  = unsold_area * asr_rate;
   setAuto('unsold_total_asr', unsold_asr);
   document.getElementById('unsold_area').value = g('unsold_total_area') ? unsold_area : '';
 
   const est_recv = soldTotal + unsold_asr;
   setAuto('est_receivables', est_recv);
 
+  const bal_cost = total_est - total_inc;
   const deposit_pct = est_recv > bal_cost ? 0.7 : 1.0;
   setAuto('amt_to_deposit', est_recv * deposit_pct);
 
@@ -777,23 +839,19 @@ function recalc() {
   const pct_dep   = realized > 0 ? (deposited / realized * 100) : 0;
   document.getElementById('pct_deposited').value = pct_dep > 0 ? fmtPct(pct_dep) : '';
 
-  // Quarterly closing balance
   const q_open  = parseNum(g('q_open_bal'));
   const q_dep_s = parseNum(g('q_dep_sales'));
   const q_dep_o = parseNum(g('q_dep_other'));
   const q_wdl_s = parseNum(g('q_wdl_sales'));
   const q_wdl_o = parseNum(g('q_wdl_other'));
-  const q_close = q_open + q_dep_s + q_dep_o - q_wdl_s - q_wdl_o;
-  setAuto('q_close_bal', q_close);
+  setAuto('q_close_bal', q_open + q_dep_s + q_dep_o - q_wdl_s - q_wdl_o);
 
-  // Cumulative closing balance
   const c_open  = parseNum(g('c_open_bal'));
   const c_dep_s = parseNum(g('c_dep_sales'));
   const c_dep_o = parseNum(g('c_dep_other'));
   const c_wdl_s = parseNum(g('c_wdl_sales'));
   const c_wdl_o = parseNum(g('c_wdl_other'));
-  const c_close = c_open + c_dep_s + c_dep_o - c_wdl_s - c_wdl_o;
-  setAuto('c_close_bal', c_close);
+  setAuto('c_close_bal', c_open + c_dep_s + c_dep_o - c_wdl_s - c_wdl_o);
 }
 
 function g(id){ const el = document.getElementById(id); return el ? el.value : ''; }
@@ -831,7 +889,6 @@ function calcSoldRow(el) {
 
 function delSoldRow(id) {
   document.getElementById(id)?.remove();
-  // renumber
   document.querySelectorAll('#soldBody tr').forEach((tr,i) => { tr.cells[0].textContent = i+1; });
   recalc();
 }
@@ -848,6 +905,69 @@ function getSoldRows() {
   })).filter(r => r.flat_no || r.agreement_price);
 }
 
+// ─── Borrowings Dynamic Tables ─────────────────────────────────────────────────
+let borrowIdx = 0;
+function addBorrowRow(name='', disbursed='', pending='', repay='') {
+  borrowIdx++;
+  const tbody = document.getElementById('borrowBody');
+  const tr = document.createElement('tr');
+  tr.id = `br-${borrowIdx}`;
+  tr.innerHTML = `
+    <td style="text-align:center">${borrowIdx}</td>
+    <td><input class="b-name" value="${name}" placeholder="e.g. State Bank of India" style="min-width:150px"/></td>
+    <td><input class="b-disbursed" value="${disbursed}" placeholder="0"/></td>
+    <td><input class="b-pending" value="${pending}" placeholder="0"/></td>
+    <td><input class="b-repay" value="${repay}" placeholder="0"/></td>
+    <td><button type="button" class="del-btn" onclick="delBorrowRow('br-${borrowIdx}')">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function delBorrowRow(id) {
+  document.getElementById(id)?.remove();
+  document.querySelectorAll('#borrowBody tr').forEach((tr,i) => { tr.cells[0].textContent = i+1; });
+}
+
+let mortgageIdx = 0;
+function addMortgageRow(name='', disbursed='', pending='', repay='') {
+  mortgageIdx++;
+  const tbody = document.getElementById('mortgageBody');
+  const tr = document.createElement('tr');
+  tr.id = `mg-${mortgageIdx}`;
+  tr.innerHTML = `
+    <td style="text-align:center">${mortgageIdx}</td>
+    <td><input class="m-name" value="${name}" placeholder="e.g. HDFC Bank Ltd" style="min-width:150px"/></td>
+    <td><input class="m-disbursed" value="${disbursed}" placeholder="0"/></td>
+    <td><input class="m-pending" value="${pending}" placeholder="0"/></td>
+    <td><input class="m-repay" value="${repay}" placeholder="0"/></td>
+    <td><button type="button" class="del-btn" onclick="delMortgageRow('mg-${mortgageIdx}')">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function delMortgageRow(id) {
+  document.getElementById(id)?.remove();
+  document.querySelectorAll('#mortgageBody tr').forEach((tr,i) => { tr.cells[0].textContent = i+1; });
+}
+
+function getBorrowings() {
+  return Array.from(document.querySelectorAll('#borrowBody tr')).map(tr => ({
+    lender: tr.querySelector('.b-name')?.value || '',
+    amt_disbursed: tr.querySelector('.b-disbursed')?.value || '',
+    pending_disb: tr.querySelector('.b-pending')?.value || '',
+    amt_repay: tr.querySelector('.b-repay')?.value || '',
+  })).filter(r => r.lender);
+}
+
+function getMortgages() {
+  return Array.from(document.querySelectorAll('#mortgageBody tr')).map(tr => ({
+    mortgaged_to: tr.querySelector('.m-name')?.value || '',
+    m_amt_disbursed: tr.querySelector('.m-disbursed')?.value || '',
+    m_pending: tr.querySelector('.m-pending')?.value || '',
+    m_repay: tr.querySelector('.m-repay')?.value || '',
+  })).filter(r => r.mortgaged_to);
+}
+
 // ─── Collect all data ──────────────────────────────────────────────────────────
 function collectData() {
   const ids = [
@@ -860,18 +980,18 @@ function collectData() {
     'dc_i_est','dc_ii_inc','dc_iii_est','dc_iii_inc','dc_tax_est','dc_tax_inc','dc_int_est','dc_int_inc',
     'dc_total_est','dc_total_inc','total_est','total_inc',
     'arch_pct','prop_land','prop_dev','ca_pct','withdrawable','withdrawn','net_withdrawable',
-    'lender','amt_disbursed','pending_disb','amt_repay',
-    'mortgaged_to','m_amt_disbursed','m_pending','m_repay',
     'units_booked','total_realized','total_deposited','pct_deposited',
     'q_open_date','q_open_bal','q_dep_sales','q_dep_other','q_wdl_sales','q_wdl_other','q_close_bal','q_close_date',
     'c_open_bal','c_dep_sales','c_dep_other','c_wdl_sales','c_wdl_other','c_close_bal',
     'bal_cost','bal_receivables','unsold_area','unsold_asr_total','est_receivables','amt_to_deposit',
-    'asr_rate','unsold_flats','unsold_total_area','unsold_total_asr',
+    'asr_rate','unsold_flats','unsold_total_area','unsold_total_asr','total_saleable_area',
     'firm_name','frn','ca_name','ca_designation','membership_no','ca_address','ca_contact','ca_email','udin1','udin2'
   ];
   const d = {};
   ids.forEach(id => { d[id] = g(id); });
   d.sold_inventory = getSoldRows();
+  d.borrowings = getBorrowings();
+  d.mortgages = getMortgages();
   return d;
 }
 
@@ -879,6 +999,8 @@ function collectData() {
 function buildReview() {
   recalc();
   const d = collectData();
+  const borrows = d.borrowings.length ? d.borrowings.map((b,i) => `(${i+1}) ${b.lender}`).join(', ') : 'None';
+  const mortgs  = d.mortgages.length  ? d.mortgages.map((m,i)  => `(${i+1}) ${m.mortgaged_to}`).join(', ') : 'None';
   function row(k,v){ return `<div class="rv-k">${k}</div><div class="rv-v">${v||'<em style="color:#aaa">—</em>'}</div>`; }
   document.getElementById('reviewContent').innerHTML = `
     <div class="rv-sec"><h3>Project</h3><div class="rv-grid">
@@ -895,6 +1017,9 @@ function buildReview() {
       ${row('Withdrawable Amount', d.withdrawable)} ${row('Less: Withdrawn', d.withdrawn)}
       ${row('Net Withdrawable', d.net_withdrawable)}
     </div></div>
+    <div class="rv-sec"><h3>Borrowings</h3><div class="rv-grid">
+      ${row('Lenders', borrows)} ${row('Mortgagees', mortgs)}
+    </div></div>
     <div class="rv-sec"><h3>Receivables</h3><div class="rv-grid">
       ${row('Balance Cost to Complete', d.bal_cost)}
       ${row('Sold Inventory Balance', d.bal_receivables)}
@@ -906,6 +1031,7 @@ function buildReview() {
       <div style="font-size:.82rem;color:#555">${d.sold_inventory.length} unit(s) entered. Balance receivable total: ₹ ${d.bal_receivables}</div>
     </div>
     <div class="rv-sec"><h3>Unsold Inventory</h3><div class="rv-grid">
+      ${row('Total Saleable Area', d.total_saleable_area + ' sq.mts.')}
       ${row('ASR Rate', '₹ ' + d.asr_rate + ' per sq.mt.')}
       ${row('Total Unsold Flats', d.unsold_flats)}
       ${row('Total Unsold Area', d.unsold_total_area + ' sq.mts.')}
@@ -948,8 +1074,194 @@ async function generateDoc() {
 // Init
 recalc();
 
-// ─── Excel Upload ──────────────────────────────────────────────────────────────
+// ─── Observation Template Functions ────────────────────────────────────────────
+function appendObs(text) {
+  const ta = document.getElementById('observations');
+  const current = ta.value.trim();
+  ta.value = (current ? current + '\n' : '') + text;
+}
+function clearObs() {
+  document.getElementById('observations').value = '';
+}
+function addObsEstimatedCost() {
+  recalc();
+  const cost = g('total_est') || '[Total Estimated Cost]';
+  appendObs(`The estimated cost of the project is considered as ₹ ${cost}/-. The promoter is undertaking the change of estimated cost with RERA accordingly.`);
+}
+function addObsBankChange() {
+  appendObs('The promoters have applied for a change of RERA designated bank account. The existing account details are being submitted for the current quarter.');
+}
+function addObsCollected() {
+  recalc();
+  const realized  = g('total_realized') || '[Total Realized]';
+  const deposited = g('total_deposited') || '[Total Deposited]';
+  const pct       = g('pct_deposited') || '[%]';
+  appendObs(`I hereby certify that the total amount collected / Realized from the allottees on account of sale / booking of units during the quarter is ₹ ${realized}/- out of which ₹ ${deposited}/- is deposited into the project designated bank account, constituting ${pct} of the total amount collected.`);
+}
+function addObsArchitect() {
+  const qend = g('quarter_end') || '[Quarter End Date]';
+  appendObs(`The Architect's Certificate in Form-2 has been obtained and is being submitted along with this certificate for the quarter ended ${qend}.`);
+}
+function addObsWithdrawable() {
+  recalc();
+  const net = g('net_withdrawable') || '[Net Withdrawable Amount]';
+  appendObs(`As per the CA certificate, the net amount which can be withdrawn from the Designated Account for the current quarter is ₹ ${net}/-.`);
+}
+function addObsCompliance() {
+  appendObs('The promoter is in compliance with all provisions of the Real Estate (Regulation and Development) Act, 2016 and the Karnataka Real Estate (Regulation and Development) Rules, 2017.');
+}
 
+// ─── Project Metadata Upload ───────────────────────────────────────────────────
+const META_MAP = {
+  'krera registration number':'krera_reg','krera reg':'krera_reg','krera reg no':'krera_reg','krera registration no':'krera_reg',
+  'project name':'project_name',
+  'promoter name':'promoter_name','promoter':'promoter_name',
+  'project cost':'project_cost','project cost (₹)':'project_cost','cost of real estate project':'project_cost','cost of project':'project_cost',
+  'project cost in words':'project_cost_words','cost in words':'project_cost_words',
+  'quarter':'quarter_label','quarter for which certificate is issued':'quarter_label',
+  'quarter end date':'quarter_end','quarter end':'quarter_end',
+  'certificate date':'cert_date','cert date':'cert_date',
+  'place':'place',
+  'total saleable area (sq.mts.)':'total_saleable_area','total saleable area':'total_saleable_area','saleable area':'total_saleable_area','total saleable area (sqmts)':'total_saleable_area',
+  'ready reckoner rate (₹/sq.mt.)':'asr_rate','ready reckoner rate':'asr_rate','asr rate':'asr_rate','rr rate':'asr_rate',
+  'total unsold flats':'unsold_flats','unsold flats':'unsold_flats','number of unsold units':'unsold_flats',
+  'estimated land cost':'lc_a_est','land cost':'lc_a_est',
+  'estimated construction cost':'dc_i_est','construction cost':'dc_i_est',
+  'ca firm name':'firm_name','firm name':'firm_name',
+  'frn':'frn','firm registration number':'frn',
+  'ca name':'ca_name','chartered accountant name':'ca_name',
+  'ca designation':'ca_designation','designation':'ca_designation',
+  'membership no':'membership_no','membership number':'membership_no','icai membership no':'membership_no',
+  'ca address':'ca_address','office address':'ca_address',
+  'ca contact':'ca_contact','contact':'ca_contact','phone':'ca_contact',
+  'ca email':'ca_email','email':'ca_email',
+  // Bank account 1
+  'account 1 holder':'b1_holder','account 1 - holder name':'b1_holder',
+  'account 1 krera name':'b1_krbad','account 1 - krera name':'b1_krbad',
+  'account 1 number':'b1_acno','account 1 - account number':'b1_acno',
+  'account 1 bank':'b1_bank','account 1 - bank name':'b1_bank',
+  'account 1 ifsc':'b1_ifsc','account 1 - ifsc':'b1_ifsc',
+  'account 1 branch':'b1_branch','account 1 - branch':'b1_branch',
+  // Bank account 2
+  'account 2 holder':'b2_holder','account 2 - holder name':'b2_holder',
+  'account 2 krera name':'b2_krbad','account 2 - krera name':'b2_krbad',
+  'account 2 number':'b2_acno','account 2 - account number':'b2_acno',
+  'account 2 bank':'b2_bank','account 2 - bank name':'b2_bank',
+  'account 2 ifsc':'b2_ifsc','account 2 - ifsc':'b2_ifsc',
+  'account 2 branch':'b2_branch','account 2 - branch':'b2_branch',
+  // Bank account 3
+  'account 3 holder':'b3_holder','account 3 - holder name':'b3_holder',
+  'account 3 krera name':'b3_krbad','account 3 - krera name':'b3_krbad',
+  'account 3 number':'b3_acno','account 3 - account number':'b3_acno',
+  'account 3 bank':'b3_bank','account 3 - bank name':'b3_bank',
+  'account 3 ifsc':'b3_ifsc','account 3 - ifsc':'b3_ifsc',
+  'account 3 branch':'b3_branch','account 3 - branch':'b3_branch',
+};
+
+function handleMetaDragOver(e) { e.preventDefault(); document.getElementById('metaUploadZone').classList.add('drag-over'); }
+function handleMetaDragLeave(e) { document.getElementById('metaUploadZone').classList.remove('drag-over'); }
+function handleMetaDrop(e) {
+  e.preventDefault();
+  document.getElementById('metaUploadZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) processMetaFile(file);
+}
+function handleMetaFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processMetaFile(file);
+  e.target.value = '';
+}
+
+function processMetaFile(file) {
+  const status = document.getElementById('metaUploadStatus');
+  status.className = 'upload-status';
+  status.style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      if (rows.length < 2) throw new Error('File is empty or has no data rows.');
+
+      let filled = 0;
+      rows.forEach(row => {
+        const fieldRaw = String(row[0] || '').toLowerCase().trim().replace(/\s+/g,' ');
+        const val = String(row[1] || '').trim();
+        if (!fieldRaw || !val || fieldRaw === 'field name') return;
+        const targetId = META_MAP[fieldRaw];
+        if (targetId) {
+          const el = document.getElementById(targetId);
+          if (el) { el.value = val; filled++; }
+        }
+      });
+
+      recalc();
+      status.className = 'upload-status success';
+      status.innerHTML = `✅ Metadata imported from <b>${file.name}</b> — <b>${filled} field(s)</b> auto-populated. Edit any field as needed.`;
+      status.style.display = 'flex';
+    } catch(err) {
+      status.className = 'upload-status error';
+      status.innerHTML = `❌ ${err.message}`;
+      status.style.display = 'flex';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function downloadMetaTemplate() {
+  const rows = [
+    ['Field Name', 'Value', 'Notes'],
+    ['KRERA Registration Number', '', 'e.g. PRM/KA/RERA/1251/446/PR/230101/000001'],
+    ['Project Name', '', 'Full name of the project'],
+    ['Promoter Name', '', 'Name of the promoter / company'],
+    ['Project Cost (₹)', '', 'Total project cost in figures (without commas)'],
+    ['Project Cost in Words', '', 'e.g. Rupees Forty Crores Only'],
+    ['Quarter for which Certificate is Issued', '', 'e.g. Q3 2025-26'],
+    ['Quarter End Date', '', 'e.g. 31st December 2025'],
+    ['Certificate Date', '', 'e.g. 15th January 2026'],
+    ['Place', 'Bangalore', ''],
+    ['Total Saleable Area (sq.mts.)', '', 'Total saleable area — used to auto-calc unsold area'],
+    ['Ready Reckoner Rate (₹/sq.mt.)', '', 'ASR rate for unsold inventory valuation'],
+    ['Total Unsold Flats', '', 'Number of unsold units'],
+    ['Estimated Land Cost', '', 'Land cost item (a) — estimated'],
+    ['Estimated Construction Cost', '', 'Construction cost (i) — as certified by Engineer'],
+    ['Account 1 Holder', '', '100% Collection Account — Holder Name'],
+    ['Account 1 KRERA Name', '', 'Account name as per KRERA'],
+    ['Account 1 Number', '', 'Account number'],
+    ['Account 1 Bank', '', 'Bank name'],
+    ['Account 1 IFSC', '', 'IFSC code'],
+    ['Account 1 Branch', '', 'Branch name'],
+    ['Account 2 Holder', '', '70% Designated Account — Holder Name'],
+    ['Account 2 KRERA Name', '', ''],
+    ['Account 2 Number', '', ''],
+    ['Account 2 Bank', '', ''],
+    ['Account 2 IFSC', '', ''],
+    ['Account 2 Branch', '', ''],
+    ['Account 3 Holder', '', '30% Account — Holder Name'],
+    ['Account 3 KRERA Name', '', ''],
+    ['Account 3 Number', '', ''],
+    ['Account 3 Bank', '', ''],
+    ['Account 3 IFSC', '', ''],
+    ['Account 3 Branch', '', ''],
+    ['CA Firm Name', 'PVKR & Co LLP', ''],
+    ['FRN', '', 'e.g. S000051'],
+    ['CA Name', '', 'CA name without CA prefix'],
+    ['CA Designation', 'Partner', ''],
+    ['Membership No', '', 'e.g. 252239'],
+    ['CA Address', '', 'Full office address'],
+    ['CA Contact', '', 'Mobile / phone number'],
+    ['CA Email', '', 'Email ID'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:42}, {wch:38}, {wch:38}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Project Metadata');
+  XLSX.writeFile(wb, 'RERA_Form4_Project_Metadata_Template.xlsx');
+}
+
+// ─── Excel Upload (Sold Inventory) ─────────────────────────────────────────────
 function handleDragOver(e) {
   e.preventDefault();
   document.getElementById('uploadZone').classList.add('drag-over');
@@ -966,24 +1278,16 @@ function handleDrop(e) {
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if (file) processExcelFile(file);
-  e.target.value = ''; // reset so same file can be re-uploaded
+  e.target.value = '';
 }
 
-// Column name aliases — maps various header spellings → canonical key
 const COL_MAP = {
-  // Flat No
   'flat no':1,'flat no.':1,'flat':1,'unit':1,'unit no':1,'unit no.':1,'apartment':1,'flat number':1,
-  // Carpet Area
   'carpet area':2,'carpet area (sq.mts.)':2,'carpet area (sq mts)':2,'carpet':2,'area':2,'carpet area (sqmts)':2,
-  // Agreement Price
   'agreement price':3,'agreement/allotment price':3,'allotment price':3,'sale price':3,
   'consideration':3,'unit consideration':3,'agreement price (₹)':3,'sale value':3,
-  // Received Amount
-  'received amount':4,'received':4,'amount received':4,'paid amount':4,'received amount (₹)':4,
-  'amount paid':4,
-  // Date of Agreement
+  'received amount':4,'received':4,'amount received':4,'paid amount':4,'received amount (₹)':4,'amount paid':4,
   'date of agreement':5,'agreement date':5,'date':5,'booking date':5,'date of sale':5,
-  // Registered
   'registered':6,'registered?':6,'is registered':6,'registration':6,'agreement registered':6
 };
 
@@ -1006,9 +1310,8 @@ function processExcelFile(file) {
 
       if (rows.length < 2) throw new Error('File is empty or has no data rows.');
 
-      // Find header row (first row with recognisable column)
       let headerRowIdx = -1;
-      let colIndex = {}; // canonical key → column index
+      let colIndex = {};
 
       for (let ri = 0; ri < Math.min(5, rows.length); ri++) {
         const row = rows[ri];
@@ -1022,40 +1325,33 @@ function processExcelFile(file) {
       }
 
       if (headerRowIdx === -1) {
-        throw new Error('Could not detect column headers. Please use the template or name columns: Flat No., Carpet Area, Agreement Price, Received Amount, Date of Agreement, Registered.');
+        throw new Error('Could not detect column headers. Please use the template.');
       }
 
-      // Parse data rows
       const dataRows = rows.slice(headerRowIdx + 1).filter(r => r.some(c => c !== ''));
       if (dataRows.length === 0) throw new Error('No data rows found after the header.');
 
-      // Clear existing rows and repopulate
       document.getElementById('soldBody').innerHTML = '';
       soldIdx = 0;
 
       let imported = 0;
       dataRows.forEach(row => {
-        const flatNo  = colIndex[1] != null ? String(row[colIndex[1]] ?? '').trim() : '';
-        const area    = colIndex[2] != null ? String(row[colIndex[2]] ?? '').trim() : '';
-        const price   = colIndex[3] != null ? formatExcelNum(row[colIndex[3]]) : '';
-        const recv    = colIndex[4] != null ? formatExcelNum(row[colIndex[4]]) : '';
-        const date    = colIndex[5] != null ? formatExcelDate(row[colIndex[5]]) : '';
-        const reg     = colIndex[6] != null ? String(row[colIndex[6]] ?? 'NO').toUpperCase().trim() : 'NO';
-        const regVal  = reg.startsWith('Y') ? 'YES' : 'NO';
-
-        // Skip blank rows
+        const flatNo = colIndex[1] != null ? String(row[colIndex[1]] ?? '').trim() : '';
+        const area   = colIndex[2] != null ? String(row[colIndex[2]] ?? '').trim() : '';
+        const price  = colIndex[3] != null ? formatExcelNum(row[colIndex[3]]) : '';
+        const recv   = colIndex[4] != null ? formatExcelNum(row[colIndex[4]]) : '';
+        const date   = colIndex[5] != null ? formatExcelDate(row[colIndex[5]]) : '';
+        const reg    = colIndex[6] != null ? String(row[colIndex[6]] ?? 'NO').toUpperCase().trim() : 'NO';
+        const regVal = reg.startsWith('Y') ? 'YES' : 'NO';
         if (!flatNo && !price) return;
-
         addSoldRow(flatNo, area, price, recv, '', date, regVal);
         imported++;
       });
 
       recalc();
-
       status.className = 'upload-status success';
       status.innerHTML = `✅ Successfully imported <b>${imported} unit(s)</b> from <b>${file.name}</b>. Balance Receivable auto-calculated for each row.`;
       status.style.display = 'flex';
-
     } catch(err) {
       status.className = 'upload-status error';
       status.innerHTML = `❌ ${err.message}`;
@@ -1069,13 +1365,11 @@ function formatExcelNum(val) {
   if (val === '' || val == null) return '';
   const n = parseFloat(String(val).replace(/[₹,\s]/g,''));
   if (isNaN(n)) return String(val).trim();
-  // Format in Indian numbering
   return fmt(n);
 }
 
 function formatExcelDate(val) {
   if (!val) return '';
-  // SheetJS gives JS Date objects when cellDates:true
   if (val instanceof Date) {
     const d = val.getDate().toString().padStart(2,'0');
     const m = (val.getMonth()+1).toString().padStart(2,'0');
@@ -1085,7 +1379,6 @@ function formatExcelDate(val) {
   return String(val).trim();
 }
 
-// ─── Download Sold Inventory Template ──────────────────────────────────────────
 function downloadTemplate() {
   const headers = ['Flat No.', 'Carpet Area (sq.mts.)', 'Agreement Price (₹)', 'Received Amount (₹)', 'Date of Agreement', 'Registered (YES/NO)'];
   const sampleRows = [
@@ -1120,23 +1413,8 @@ function handleBorrowFileSelect(e) {
   e.target.value = '';
 }
 
-// Borrowings field map: normalised label → element id
-const BORROW_MAP = {
-  'name of lender': 'lender', 'lender': 'lender', 'lender name': 'lender',
-  'amount disbursed': 'amt_disbursed', 'disbursed amount': 'amt_disbursed',
-  'amount disbursed (borrowing)': 'amt_disbursed',
-  'amount pending': 'pending_disb', 'amount pending for disbursement': 'pending_disb',
-  'pending disbursement': 'pending_disb', 'amount pending disbursement (borrowing)': 'pending_disb',
-  'amount to be repaid': 'amt_repay', 'amount repaid': 'amt_repay',
-  'amount to repay': 'amt_repay', 'amount to be repaid (borrowing)': 'amt_repay',
-  'name of mortgagee': 'mortgaged_to', 'mortgaged to': 'mortgaged_to',
-  'name of institution': 'mortgaged_to', 'mortgagee': 'mortgaged_to',
-  'name of mortgagee (institution)': 'mortgaged_to',
-  'amount disbursed (mortgage)': 'm_amt_disbursed', 'mortgage amount disbursed': 'm_amt_disbursed',
-  'amount pending disbursement (mortgage)': 'm_pending', 'mortgage amount pending': 'm_pending',
-  'amount to be repaid (mortgage)': 'm_repay', 'mortgage amount to repay': 'm_repay',
-};
-
+// New multi-row borrowings file format:
+// Section (Borrowing/Mortgage) | Name | Amount Disbursed | Amount Pending | Amount to Repay
 function processBorrowingsFile(file) {
   const status = document.getElementById('borrowUploadStatus');
   status.className = 'upload-status';
@@ -1150,21 +1428,40 @@ function processBorrowingsFile(file) {
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
       if (rows.length < 2) throw new Error('File is empty or has no data rows.');
 
-      let filled = 0;
-      rows.forEach(row => {
-        const fieldRaw = String(row[0] || '').toLowerCase().trim();
-        const val = String(row[1] || '').trim();
-        if (!fieldRaw || !val) return;
-        const targetId = BORROW_MAP[fieldRaw];
-        if (targetId && document.getElementById(targetId)) {
-          document.getElementById(targetId).value = val;
-          filled++;
-        }
-      });
+      // Detect format by checking header row
+      const hdr0 = String(rows[0][0] || '').toLowerCase().trim();
+      let borrowCount = 0, mortCount = 0;
 
-      status.className = 'upload-status success';
-      status.innerHTML = `✅ Imported borrowings data from <b>${file.name}</b> — ${filled} field(s) filled.`;
-      status.style.display = 'flex';
+      if (hdr0 === 'section') {
+        // New multi-row format: Section | Name | Amount Disbursed | Amount Pending | Amount to Repay
+        // Clear existing rows
+        document.getElementById('borrowBody').innerHTML = '';
+        document.getElementById('mortgageBody').innerHTML = '';
+        borrowIdx = 0; mortgageIdx = 0;
+
+        rows.slice(1).forEach(row => {
+          const section  = String(row[0] || '').toLowerCase().trim();
+          const name     = String(row[1] || '').trim();
+          const disb     = formatExcelNum(row[2]);
+          const pending  = formatExcelNum(row[3]);
+          const repay    = formatExcelNum(row[4]);
+          if (!name) return;
+          if (section.startsWith('b') && !section.startsWith('bo') === false || section === 'borrowing' || section === 'borrowings' || section === 'lender') {
+            addBorrowRow(name, disb, pending, repay);
+            borrowCount++;
+          } else if (section === 'mortgage' || section === 'mortgages' || section === 'mortgagee') {
+            addMortgageRow(name, disb, pending, repay);
+            mortCount++;
+          }
+        });
+
+        status.className = 'upload-status success';
+        status.innerHTML = `✅ Imported from <b>${file.name}</b>: <b>${borrowCount}</b> borrowing(s), <b>${mortCount}</b> mortgage(s).`;
+        status.style.display = 'flex';
+
+      } else {
+        throw new Error('Unrecognised format. Please use the downloadable template with Section column.');
+      }
     } catch(err) {
       status.className = 'upload-status error';
       status.innerHTML = `❌ ${err.message}`;
@@ -1176,18 +1473,14 @@ function processBorrowingsFile(file) {
 
 function downloadBorrowingsTemplate() {
   const rows = [
-    ['Field', 'Value'],
-    ['Name of Lender', 'NIL'],
-    ['Amount Disbursed', 'NIL'],
-    ['Amount Pending for Disbursement', 'NIL'],
-    ['Amount to be Repaid', 'NIL'],
-    ['Name of Mortgagee (Institution)', 'NIL'],
-    ['Amount Disbursed (Mortgage)', 'NIL'],
-    ['Amount Pending Disbursement (Mortgage)', 'NIL'],
-    ['Amount to be Repaid (Mortgage)', 'NIL'],
+    ['Section', 'Name', 'Amount Disbursed (₹)', 'Amount Pending (₹)', 'Amount to Repay (₹)'],
+    ['Borrowing', 'e.g. State Bank of India', '0', '0', '0'],
+    ['Borrowing', 'Add more rows as needed', '0', '0', '0'],
+    ['Mortgage', 'e.g. HDFC Bank Ltd', '0', '0', '0'],
+    ['Mortgage', 'Add more rows as needed', '0', '0', '0'],
   ];
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:40}, {wch:25}];
+  ws['!cols'] = [{wch:14}, {wch:30}, {wch:22}, {wch:22}, {wch:22}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Borrowings');
   XLSX.writeFile(wb, 'RERA_Form4_Borrowings_Template.xlsx');

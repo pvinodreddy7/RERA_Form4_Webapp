@@ -284,18 +284,42 @@ def build_cost_table(doc, d):
         p.paragraph_format.left_indent = Inches(0.05)
         run = p.add_run(text); run.bold = True; run.font.size = Pt(9)
 
-    # Section 2: Borrowings
+    # Section 2: Borrowings / Mortgages (supports multiple entries)
     section_row('2', 'Borrowings / Mortgage Details (If Applicable)')
+
+    borrowings = d.get('borrowings', [])
+    # backward compat: legacy single-entry fields
+    if not borrowings and d.get('lender'):
+        borrowings = [{'lender': d.get('lender',''), 'amt_disbursed': d.get('amt_disbursed',''),
+                       'pending_disb': d.get('pending_disb',''), 'amt_repay': d.get('amt_repay','')}]
+
     b_sh_row('A. Borrowing Details')
-    lv_row('1. Name of the Lender', d.get('lender','NIL'))
-    lv_row('2. Amount Disbursed', inr(d.get('amt_disbursed','NIL')))
-    lv_row('3. Amount pending for disbursement from Lender', inr(d.get('pending_disb','NIL')))
-    lv_row('4. Amount to be repaid to lender', inr(d.get('amt_repay','NIL')))
+    if borrowings:
+        for idx, b in enumerate(borrowings, 1):
+            pfx = f'({idx}) ' if len(borrowings) > 1 else ''
+            lv_row(pfx + 'Name of the Lender', b.get('lender', '') or 'NIL')
+            lv_row(pfx + 'Amount Disbursed', inr(b.get('amt_disbursed', '')))
+            lv_row(pfx + 'Amount Pending for Disbursement from Lender', inr(b.get('pending_disb', '')))
+            lv_row(pfx + 'Amount to be Repaid to Lender', inr(b.get('amt_repay', '')))
+    else:
+        lv_row('Not Applicable', 'NIL')
+
+    mortgages = d.get('mortgages', [])
+    # backward compat
+    if not mortgages and d.get('mortgaged_to'):
+        mortgages = [{'mortgaged_to': d.get('mortgaged_to',''), 'm_amt_disbursed': d.get('m_amt_disbursed',''),
+                      'm_pending': d.get('m_pending',''), 'm_repay': d.get('m_repay','')}]
+
     b_sh_row('B. Mortgage Details')
-    lv_row('1. Mortgaged to (Name of Entity / Institution)', d.get('mortgaged_to','NIL'))
-    lv_row('2. Amount Disbursed', inr(d.get('m_amt_disbursed','NIL')))
-    lv_row('3. Amount pending for disbursement', inr(d.get('m_pending','NIL')))
-    lv_row('4. Amount to be repaid to lender', inr(d.get('m_repay','NIL')))
+    if mortgages:
+        for idx, m in enumerate(mortgages, 1):
+            pfx = f'({idx}) ' if len(mortgages) > 1 else ''
+            lv_row(pfx + 'Mortgaged to (Name of Entity / Institution)', m.get('mortgaged_to', '') or 'NIL')
+            lv_row(pfx + 'Amount Disbursed', inr(m.get('m_amt_disbursed', '')))
+            lv_row(pfx + 'Amount Pending for Disbursement', inr(m.get('m_pending', '')))
+            lv_row(pfx + 'Amount to be Repaid to Lender', inr(m.get('m_repay', '')))
+    else:
+        lv_row('Not Applicable', 'NIL')
 
     # Section 3: Bank Transactions
     section_row('3', 'Details of transactions in the designated RERA Bank Account (Including New Account)')
