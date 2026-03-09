@@ -1717,9 +1717,16 @@ async function parsePrevCertificate(file) {
     setTimeout(gsSkip, 3000);
 
   } catch(err) {
+    let msg = err.message || 'Unknown error';
+    let hint = '';
+    if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('limit: 0')) {
+      hint = ' <br><small>Your API key has no free-tier quota. Create a key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> and update the .env file.</small>';
+    } else if (msg.includes('GEMINI_API_KEY')) {
+      hint = ' <br><small>Set GEMINI_API_KEY in the .env file — get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></small>';
+    }
     statusEl.innerHTML = `
-      <div class="upload-status error" style="display:flex;margin-top:10px">
-        ❌ ${err.message}
+      <div class="upload-status error" style="display:flex;flex-direction:column;margin-top:10px">
+        ❌ ${msg}${hint}
       </div>`;
   }
 }
