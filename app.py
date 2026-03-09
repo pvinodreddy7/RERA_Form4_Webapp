@@ -147,33 +147,38 @@ def add_firm_header(doc):
     pBdr.append(bot); pPr.append(pBdr)
 
 def add_ca_signature(doc, d, udin_key='udin1'):
-    """CA signature block."""
-    doc.add_paragraph()
-    p = doc.add_paragraph()
-    para_run(p, 'Yours Faithfully,', size=10)
-    p2 = doc.add_paragraph()
-    para_run(p2, f'For {d.get("firm_name","PVKR & Co LLP")} ', size=10)
-    p3 = doc.add_paragraph()
-    para_run(p3, 'Chartered Accountants,', size=10)
-    p4 = doc.add_paragraph()
-    para_run(p4, f'FRN: {d.get("frn","")}', size=10)
-    doc.add_paragraph()
-    doc.add_paragraph()
-    doc.add_paragraph()
-    p5 = doc.add_paragraph()
-    para_run(p5, f'CA {d.get("ca_name","")}', bold=True, size=10)
-    p6 = doc.add_paragraph()
-    para_run(p6, d.get('ca_designation', 'Partner'), size=10)
-    p7 = doc.add_paragraph()
-    para_run(p7, f'Membership Number: {d.get("membership_no","")}', size=10)
-    doc.add_paragraph()
-    p8 = doc.add_paragraph()
-    para_run(p8, f'Date: {d.get("cert_date","")}', size=10)
-    p9 = doc.add_paragraph()
-    para_run(p9, f'Place: {d.get("place","Bangalore")}', size=10)
-    p10 = doc.add_paragraph()
+    """CA signature block — kept together on page via keep_with_next."""
+    spacer = doc.add_paragraph()
+    spacer.paragraph_format.space_after = Pt(4)
+    spacer.paragraph_format.keep_with_next = True
+
+    def sig_p(text, bold=False, kwn=True):
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after = Pt(2)
+        p.paragraph_format.keep_with_next = kwn
+        para_run(p, text, bold=bold, size=10)
+        return p
+
+    sig_p('Yours Faithfully,')
+    sig_p(f'For {d.get("firm_name","PVKR & Co LLP")} ')
+    sig_p('Chartered Accountants,')
+    sig_p(f'FRN: {d.get("frn","")}')
+    # Three blank lines for physical signature space
+    for _ in range(3):
+        e = doc.add_paragraph()
+        e.paragraph_format.space_after = Pt(3)
+        e.paragraph_format.keep_with_next = True
+    sig_p(f'CA {d.get("ca_name","")}', bold=True)
+    sig_p(d.get('ca_designation', 'Partner'))
+    sig_p(f'Membership Number: {d.get("membership_no","")}')
+    e2 = doc.add_paragraph()
+    e2.paragraph_format.space_after = Pt(3)
+    e2.paragraph_format.keep_with_next = True
+    sig_p(f'Date: {d.get("cert_date","")}')
+    sig_p(f'Place: {d.get("place","Bangalore")}')
     udin = d.get(udin_key) or d.get('udin1', '')
-    para_run(p10, f'UDIN: {udin}', size=10)
+    sig_p(f'UDIN: {udin}', kwn=False)   # last paragraph — no keep_with_next
 
 # ─── Cost Table ───────────────────────────────────────────────────────────────
 
@@ -507,19 +512,24 @@ def generate_form4(d):
 
     # Observations
     obs = d.get('observations','')
-    if obs:
+    obs_lines = [l.strip() for l in obs.split('\n') if l.strip()] if obs else []
+    if obs_lines:
         doc.add_paragraph()
         pobs = doc.add_paragraph()
+        pobs.paragraph_format.keep_with_next = True
         para_run(pobs, 'Qualification/Observations:', bold=True, size=10)
         doc.add_paragraph()
-        for line in obs.split('\n'):
-            if line.strip():
-                pl = doc.add_paragraph()
-                pl.paragraph_format.left_indent = Inches(0.3)
-                pl.paragraph_format.space_after = Pt(3)
-                para_run(pl, line.strip(), size=10)
+        for i, line in enumerate(obs_lines):
+            pl = doc.add_paragraph()
+            pl.paragraph_format.left_indent = Inches(0.3)
+            pl.paragraph_format.space_after = Pt(3)
+            # Last obs line keeps with the signature spacer
+            pl.paragraph_format.keep_with_next = (i == len(obs_lines) - 1)
+            para_run(pl, line, size=10)
+    else:
+        # No obs — cert_detail should pull signature with it
+        cert_detail.paragraph_format.keep_with_next = True
 
-    doc.add_paragraph()
     add_ca_signature(doc, d, 'udin1')
 
     # ── PAGE 2: Cost Table (Additional Information) ───────────────────────────
@@ -631,14 +641,15 @@ def generate_form4(d):
 
     doc.add_paragraph()
 
-    # Certification text for Annexure
+    # Certification text for Annexure — keep_with_next so signature follows on same page
     pcert = doc.add_paragraph()
+    pcert.paragraph_format.space_after = Pt(4)
+    pcert.paragraph_format.keep_with_next = True
     para_run(pcert,
         f'This certificate is being issued for RERA compliance for {d.get("promoter_name","")} '
         f'and is based on the records and documents produced before me and explanations provided to me '
         f'by the Management of the Company.', size=10)
 
-    doc.add_paragraph()
     udin2_key = 'udin2' if d.get('udin2') else 'udin1'
     add_ca_signature(doc, d, udin2_key)
 

@@ -152,6 +152,27 @@
     .gs-footer{margin-top:6px;color:#bbb;font-size:.77rem}
     .gs-parsing{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fffbea;border:1.5px solid #ffd54f;border-radius:8px;font-size:.82rem;font-weight:600;color:#7a5700;margin-top:10px}
     .gs-spin{width:18px;height:18px;border:3px solid rgba(122,87,0,.25);border-top-color:#f59c00;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+    /* ── Account Section Boxes (Bank Accounts step) ────────────────────────── */
+    .acct-box{border-radius:10px;border:2px solid;margin-bottom:20px;overflow:hidden}
+    .acct-box.acct-100{border-color:#1abc9c}
+    .acct-box.acct-70{border-color:#2980b9}
+    .acct-box.acct-30{border-color:#e67e22}
+    .acct-hdr{padding:11px 16px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem}
+    .acct-box.acct-100 .acct-hdr{background:#e8faf4;color:#0e6655}
+    .acct-box.acct-70 .acct-hdr{background:#eaf4fb;color:#1a5276}
+    .acct-box.acct-30 .acct-hdr{background:#fef5e7;color:#784212}
+    .acct-tag{border-radius:20px;padding:3px 12px;font-size:.75rem;font-weight:800;color:#fff;letter-spacing:.02em;flex-shrink:0}
+    .acct-box.acct-100 .acct-tag{background:#1abc9c}
+    .acct-box.acct-70 .acct-tag{background:#2980b9}
+    .acct-box.acct-30 .acct-tag{background:#e67e22}
+    .acct-note{font-size:.77rem;font-weight:400;color:#666;margin-left:2px}
+    .acct-fields{padding:14px 16px 10px}
+
+    /* ── Transaction Section Boxes (Bank Transactions step) ────────────────── */
+    .txn-box{border-radius:8px;border:1.5px solid #d0dce8;margin-bottom:18px;overflow:hidden}
+    .txn-hdr{padding:9px 16px;background:#f0f4fb;border-bottom:1.5px solid #d0dce8;font-weight:700;font-size:.85rem;color:#1F497D;display:flex;align-items:center;gap:8px}
+    .txn-fields{padding:14px 0 4px}
   </style>
 </head>
 <body>
@@ -302,34 +323,61 @@
         <div class="card-title"><span class="badge">2</span> Designated Bank Accounts</div>
         <div class="info">As per the actual Form 4, there are three RERA designated accounts: 100% Collection, 70% Designated, and 30% Account.</div>
 
-        <div class="sub-heading">Account 1 — 100% Collection Account</div>
-        <div class="grid g2">
-          <div class="fg full"><label>Account Holder Name</label><input id="b1_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
-          <div class="fg full"><label>Account Name as per KRERA</label><input id="b1_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD RERA COLLECTION ACCOUNT ABC RESIDENCY – 100%"/></div>
-          <div class="fg"><label>Account Number</label><input id="b1_acno" placeholder="000000000000001"/></div>
-          <div class="fg"><label>Bank Name</label><input id="b1_bank" placeholder="Axis Bank"/></div>
-          <div class="fg"><label>IFSC Code</label><input id="b1_ifsc" placeholder="UTIB0000001"/></div>
-          <div class="fg"><label>Branch Name</label><input id="b1_branch" placeholder="Bangalore Branch"/></div>
+        <!-- ─── Account 1: 100% Collection ─────────────────────────────────── -->
+        <div class="acct-box acct-100">
+          <div class="acct-hdr">
+            <span class="acct-tag">100%</span>
+            Collection Account
+            <span class="acct-note">— all sale receipts deposited here first</span>
+          </div>
+          <div class="acct-fields">
+            <div class="grid g2">
+              <div class="fg full"><label>Account Holder Name</label><input id="b1_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
+              <div class="fg full"><label>Account Name as per KRERA</label><input id="b1_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD RERA COLLECTION ACCOUNT ABC RESIDENCY – 100%"/></div>
+              <div class="fg"><label>Account Number</label><input id="b1_acno" placeholder="000000000000001"/></div>
+              <div class="fg"><label>Bank Name</label><input id="b1_bank" placeholder="Axis Bank"/></div>
+              <div class="fg"><label>IFSC Code</label><input id="b1_ifsc" placeholder="UTIB0000001"/></div>
+              <div class="fg"><label>Branch Name</label><input id="b1_branch" placeholder="Bangalore Branch"/></div>
+            </div>
+          </div>
         </div>
 
-        <div class="sub-heading">Account 2 — 70% Designated Account</div>
-        <div class="grid g2">
-          <div class="fg full"><label>Account Holder Name</label><input id="b2_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
-          <div class="fg full"><label>Account Name as per KRERA</label><input id="b2_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA DESIGNATED ACCOUNT - 70%"/></div>
-          <div class="fg"><label>Account Number</label><input id="b2_acno" placeholder="000000000000002"/></div>
-          <div class="fg"><label>Bank Name</label><input id="b2_bank" placeholder="Axis Bank"/></div>
-          <div class="fg"><label>IFSC Code</label><input id="b2_ifsc" placeholder="UTIB0000001"/></div>
-          <div class="fg"><label>Branch Name</label><input id="b2_branch" placeholder="Bangalore Branch"/></div>
+        <!-- ─── Account 2: 70% Designated ───────────────────────────────────── -->
+        <div class="acct-box acct-70">
+          <div class="acct-hdr">
+            <span class="acct-tag">70%</span>
+            Designated Account
+            <span class="acct-note">— 70% transferred here; used for construction withdrawals</span>
+          </div>
+          <div class="acct-fields">
+            <div class="grid g2">
+              <div class="fg full"><label>Account Holder Name</label><input id="b2_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
+              <div class="fg full"><label>Account Name as per KRERA</label><input id="b2_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA DESIGNATED ACCOUNT - 70%"/></div>
+              <div class="fg"><label>Account Number</label><input id="b2_acno" placeholder="000000000000002"/></div>
+              <div class="fg"><label>Bank Name</label><input id="b2_bank" placeholder="Axis Bank"/></div>
+              <div class="fg"><label>IFSC Code</label><input id="b2_ifsc" placeholder="UTIB0000001"/></div>
+              <div class="fg"><label>Branch Name</label><input id="b2_branch" placeholder="Bangalore Branch"/></div>
+            </div>
+          </div>
         </div>
 
-        <div class="sub-heading">Account 3 — 30% Account</div>
-        <div class="grid g2">
-          <div class="fg full"><label>Account Holder Name</label><input id="b3_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
-          <div class="fg full"><label>Account Name as per KRERA</label><input id="b3_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA ACCOUNT - 30%"/></div>
-          <div class="fg"><label>Account Number</label><input id="b3_acno" placeholder="000000000000003"/></div>
-          <div class="fg"><label>Bank Name</label><input id="b3_bank" placeholder="Axis Bank"/></div>
-          <div class="fg"><label>IFSC Code</label><input id="b3_ifsc" placeholder="UTIB0000001"/></div>
-          <div class="fg"><label>Branch Name</label><input id="b3_branch" placeholder="Bangalore Branch"/></div>
+        <!-- ─── Account 3: 30% ───────────────────────────────────────────────── -->
+        <div class="acct-box acct-30">
+          <div class="acct-hdr">
+            <span class="acct-tag">30%</span>
+            30% Account
+            <span class="acct-note">— remaining 30% for general project &amp; construction expenses</span>
+          </div>
+          <div class="acct-fields">
+            <div class="grid g2">
+              <div class="fg full"><label>Account Holder Name</label><input id="b3_holder" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD"/></div>
+              <div class="fg full"><label>Account Name as per KRERA</label><input id="b3_krbad" placeholder="ABC BUILDERS AND DEVELOPERS PVT LTD ABC RESIDENCY RERA ACCOUNT - 30%"/></div>
+              <div class="fg"><label>Account Number</label><input id="b3_acno" placeholder="000000000000003"/></div>
+              <div class="fg"><label>Bank Name</label><input id="b3_bank" placeholder="Axis Bank"/></div>
+              <div class="fg"><label>IFSC Code</label><input id="b3_ifsc" placeholder="UTIB0000001"/></div>
+              <div class="fg"><label>Branch Name</label><input id="b3_branch" placeholder="Bangalore Branch"/></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="nav">
@@ -548,52 +596,67 @@
       <div class="card">
         <div class="card-title"><span class="badge">5</span> Details of Transactions in Designated RERA Bank Account (Sl. No. 3)</div>
 
-        <div class="sub-heading">Quarterly Summary</div>
-        <div class="grid g2">
-          <div class="fg"><label>Total Number of Units Booked (quarter)</label>
-            <input id="units_booked" placeholder="30"/></div>
-          <div class="fg"><label>Total Amount Realized from Sale of Units (quarter) (₹)</label>
-            <input id="total_realized" placeholder="3,00,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Total Amount Deposited into Bank (quarter) (₹)</label>
-            <input id="total_deposited" placeholder="2,10,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>% of Deposit Made <span class="calc">● Auto</span></label>
-            <input id="pct_deposited" class="auto" readonly tabindex="-1"/></div>
+        <!-- ─── Section: Quarterly Summary ──────────────────────────────────── -->
+        <div class="txn-box">
+          <div class="txn-hdr">📊 Quarterly Receipts Summary</div>
+          <div class="txn-fields">
+            <div class="grid g2">
+              <div class="fg"><label>Total Number of Units Booked (quarter)</label>
+                <input id="units_booked" placeholder="30"/></div>
+              <div class="fg"><label>Total Amount Realized from Sale of Units (quarter) (₹)</label>
+                <input id="total_realized" placeholder="3,00,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Total Amount Deposited into Bank (quarter) (₹)</label>
+                <input id="total_deposited" placeholder="2,10,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>% of Deposit Made <span class="calc">● Auto</span></label>
+                <input id="pct_deposited" class="auto" readonly tabindex="-1"/></div>
+            </div>
+          </div>
         </div>
 
-        <div class="sub-heading">Quarterly Bank Reconciliation</div>
-        <div class="grid g2">
-          <div class="fg"><label>Opening Balance Date</label>
-            <input id="q_open_date" placeholder="01st October 2025"/></div>
-          <div class="fg"><label>Opening Balance (₹)</label>
-            <input id="q_open_bal" placeholder="1,00,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Deposits from Sales during Quarter (₹)</label>
-            <input id="q_dep_sales" placeholder="4,00,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Other Deposits (₹)</label>
-            <input id="q_dep_other" placeholder="0" oninput="recalc()"/></div>
-          <div class="fg"><label>Withdrawals from Sale Proceeds (₹)</label>
-            <input id="q_wdl_sales" placeholder="5,00,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Other Withdrawals (₹)</label>
-            <input id="q_wdl_other" placeholder="0" oninput="recalc()"/></div>
-          <div class="fg"><label>Closing Balance (₹) <span class="calc">● Auto = Open + Dep − Wdl</span></label>
-            <input id="q_close_bal" class="auto" readonly tabindex="-1"/></div>
-          <div class="fg"><label>Closing Balance Date</label>
-            <input id="q_close_date" placeholder="31st December 2025"/></div>
+        <!-- ─── Section: Quarterly Bank Reconciliation ───────────────────────── -->
+        <div class="txn-box">
+          <div class="txn-hdr">🏦 Quarterly Bank Reconciliation</div>
+          <div class="txn-fields">
+            <div class="grid g2">
+              <div class="fg"><label>Opening Balance Date</label>
+                <input id="q_open_date" placeholder="01st October 2025"/></div>
+              <div class="fg"><label>Opening Balance (₹)</label>
+                <input id="q_open_bal" placeholder="1,00,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Deposits from Sales during Quarter (₹)</label>
+                <input id="q_dep_sales" placeholder="4,00,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Other Deposits (₹)</label>
+                <input id="q_dep_other" placeholder="0" oninput="recalc()"/></div>
+              <div class="fg"><label>Withdrawals from Sale Proceeds (₹)</label>
+                <input id="q_wdl_sales" placeholder="5,00,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Other Withdrawals (₹)</label>
+                <input id="q_wdl_other" placeholder="0" oninput="recalc()"/></div>
+              <div class="fg"><label>Closing Balance (₹) <span class="calc">● Auto = Open + Dep − Wdl</span></label>
+                <input id="q_close_bal" class="auto" readonly tabindex="-1"/></div>
+              <div class="fg"><label>Closing Balance Date</label>
+                <input id="q_close_date" placeholder="31st December 2025"/></div>
+            </div>
+          </div>
         </div>
 
-        <div class="sub-heading">Cumulative Reconciliation (From Project Beginning till Quarter End)</div>
-        <div class="grid g2">
-          <div class="fg"><label>Opening Balance of Account (₹)</label>
-            <input id="c_open_bal" placeholder="0" oninput="recalc()"/></div>
-          <div class="fg"><label>Total Deposits from Sale Proceeds (incl. old RERA account) (₹)</label>
-            <input id="c_dep_sales" placeholder="16,00,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Total Deposits other than Sale Proceeds (₹)</label>
-            <input id="c_dep_other" placeholder="50,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Total Withdrawals from Sale Proceeds incl. returns (₹)</label>
-            <input id="c_wdl_sales" placeholder="17,00,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Total Withdrawals other than Sale Proceeds (₹)</label>
-            <input id="c_wdl_other" placeholder="50,00,000" oninput="recalc()"/></div>
-          <div class="fg"><label>Closing Balance for Current Quarter (₹) <span class="calc">● Auto</span></label>
-            <input id="c_close_bal" class="auto" readonly tabindex="-1"/></div>
+        <!-- ─── Section: Cumulative Reconciliation ───────────────────────────── -->
+        <div class="txn-box">
+          <div class="txn-hdr">📈 Cumulative Reconciliation (From Project Beginning till Quarter End)</div>
+          <div class="txn-fields">
+            <div class="grid g2">
+              <div class="fg"><label>Opening Balance of Account (₹)</label>
+                <input id="c_open_bal" placeholder="0" oninput="recalc()"/></div>
+              <div class="fg"><label>Total Deposits from Sale Proceeds (incl. old RERA account) (₹)</label>
+                <input id="c_dep_sales" placeholder="16,00,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Total Deposits other than Sale Proceeds (₹)</label>
+                <input id="c_dep_other" placeholder="50,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Total Withdrawals from Sale Proceeds incl. returns (₹)</label>
+                <input id="c_wdl_sales" placeholder="17,00,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Total Withdrawals other than Sale Proceeds (₹)</label>
+                <input id="c_wdl_other" placeholder="50,00,000" oninput="recalc()"/></div>
+              <div class="fg"><label>Closing Balance for Current Quarter (₹) <span class="calc">● Auto</span></label>
+                <input id="c_close_bal" class="auto" readonly tabindex="-1"/></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="nav">
@@ -1330,18 +1393,29 @@ function downloadMetaTemplate() {
     ['CA Email', '', 'Email ID'],
   ];
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:44}, {wch:36}, {wch:42}];
-  // Style section header rows (grey fill)
+  ws['!cols'] = [{wch:46}, {wch:38}, {wch:44}];
+  // Freeze the header row so it stays visible when scrolling
+  ws['!freeze'] = {xSplit:0, ySplit:1, topLeftCell:'A2', activePane:'bottomLeft'};
+  // Mark section divider rows so they're easy to spot (bold font)
   rows.forEach((r, i) => {
-    if (String(r[0]).startsWith('─')) {
-      const cellRef = XLSX.utils.encode_cell({r: i, c: 0});
-      if (!ws[cellRef]) return;
-      ws[cellRef].s = {fill:{fgColor:{rgb:'E8EEF6'}}, font:{bold:true, color:{rgb:'1F497D'}}};
+    const key = String(r[0]);
+    if (key.startsWith('─')) {
+      ['A','B','C'].forEach(col => {
+        const ref = col + (i+1);
+        if (!ws[ref]) ws[ref] = {t:'s', v: r[['A','B','C'].indexOf(col)]};
+        ws[ref].s = {font:{bold:true, color:{rgb:'1F497D'}}, fill:{fgColor:{rgb:'E8EEF6'}}};
+      });
+    } else if (i === 0) {
+      // Header row
+      ['A','B','C'].forEach(col => {
+        const ref = col + '1';
+        if (ws[ref]) ws[ref].s = {font:{bold:true, color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'1F497D'}}};
+      });
     }
   });
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Project Metadata');
-  XLSX.writeFile(wb, 'RERA_Form4_Project_Metadata_Template.xlsx');
+  XLSX.writeFile(wb, 'RERA_Form4_Project_Metadata_Template.xlsx', {cellStyles:true});
 }
 
 // ─── Excel Upload (Sold Inventory) ─────────────────────────────────────────────
@@ -1496,8 +1570,6 @@ function handleBorrowFileSelect(e) {
   e.target.value = '';
 }
 
-// New multi-row borrowings file format:
-// Section (Borrowing/Mortgage) | Name | Amount Disbursed | Amount Pending | Amount to Repay
 function processBorrowingsFile(file) {
   const status = document.getElementById('borrowUploadStatus');
   status.className = 'upload-status';
@@ -1507,44 +1579,56 @@ function processBorrowingsFile(file) {
     try {
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-      if (rows.length < 2) throw new Error('File is empty or has no data rows.');
-
-      // Detect format by checking header row
-      const hdr0 = String(rows[0][0] || '').toLowerCase().trim();
       let borrowCount = 0, mortCount = 0;
 
-      if (hdr0 === 'section') {
-        // New multi-row format: Section | Name | Amount Disbursed | Amount Pending | Amount to Repay
-        // Clear existing rows
-        document.getElementById('borrowBody').innerHTML = '';
-        document.getElementById('mortgageBody').innerHTML = '';
-        borrowIdx = 0; mortgageIdx = 0;
+      // ── Detect format: 2-sheet (new) vs single-sheet with Section col (legacy) ──
+      const hasBorrowSheet = wb.SheetNames.some(n => /borrow/i.test(n));
+      const hasMortSheet   = wb.SheetNames.some(n => /mort/i.test(n));
 
-        rows.slice(1).forEach(row => {
-          const section  = String(row[0] || '').toLowerCase().trim();
-          const name     = String(row[1] || '').trim();
-          const disb     = formatExcelNum(row[2]);
-          const pending  = formatExcelNum(row[3]);
-          const repay    = formatExcelNum(row[4]);
-          if (!name) return;
-          if (section.startsWith('b') && !section.startsWith('bo') === false || section === 'borrowing' || section === 'borrowings' || section === 'lender') {
-            addBorrowRow(name, disb, pending, repay);
-            borrowCount++;
-          } else if (section === 'mortgage' || section === 'mortgages' || section === 'mortgagee') {
-            addMortgageRow(name, disb, pending, repay);
-            mortCount++;
-          }
+      document.getElementById('borrowBody').innerHTML = '';
+      document.getElementById('mortgageBody').innerHTML = '';
+      borrowIdx = 0; mortgageIdx = 0;
+
+      if (hasBorrowSheet || hasMortSheet) {
+        // ── New 2-sheet format ─────────────────────────────────────────────
+        wb.SheetNames.forEach(sheetName => {
+          const ws   = wb.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+          if (rows.length < 2) return;
+          const isBorrow = /borrow/i.test(sheetName);
+          const isMort   = /mort/i.test(sheetName);
+          rows.slice(1).forEach(row => {
+            const name    = String(row[0] || '').trim();
+            const disb    = formatExcelNum(row[1]);
+            const pending = formatExcelNum(row[2]);
+            const repay   = formatExcelNum(row[3]);
+            if (!name) return;
+            if (isBorrow) { addBorrowRow(name, disb, pending, repay);   borrowCount++; }
+            else if (isMort)   { addMortgageRow(name, disb, pending, repay); mortCount++;   }
+          });
         });
-
-        status.className = 'upload-status success';
-        status.innerHTML = `✅ Imported from <b>${file.name}</b>: <b>${borrowCount}</b> borrowing(s), <b>${mortCount}</b> mortgage(s).`;
-        status.style.display = 'flex';
-
       } else {
-        throw new Error('Unrecognised format. Please use the downloadable template with Section column.');
+        // ── Legacy single-sheet: Section | Name | Disbursed | Pending | Repay ──
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+        if (rows.length < 2) throw new Error('File is empty or has no data rows.');
+        const hdr0 = String(rows[0][0] || '').toLowerCase().trim();
+        if (hdr0 !== 'section') throw new Error('Unrecognised format. Please use the downloadable template.');
+        rows.slice(1).forEach(row => {
+          const section = String(row[0] || '').toLowerCase().trim();
+          const name    = String(row[1] || '').trim();
+          const disb    = formatExcelNum(row[2]);
+          const pending = formatExcelNum(row[3]);
+          const repay   = formatExcelNum(row[4]);
+          if (!name) return;
+          if (/^borrow|lender/.test(section)) { addBorrowRow(name, disb, pending, repay);   borrowCount++; }
+          else if (/^mort/.test(section))      { addMortgageRow(name, disb, pending, repay); mortCount++;   }
+        });
       }
+
+      status.className = 'upload-status success';
+      status.innerHTML = `✅ Imported from <b>${file.name}</b>: <b>${borrowCount}</b> borrowing(s), <b>${mortCount}</b> mortgage(s).`;
+      status.style.display = 'flex';
     } catch(err) {
       status.className = 'upload-status error';
       status.innerHTML = `❌ ${err.message}`;
@@ -1641,18 +1725,27 @@ async function parsePrevCertificate(file) {
 }
 
 function downloadBorrowingsTemplate() {
-  const rows = [
-    ['Section', 'Name', 'Amount Disbursed (₹)', 'Amount Pending (₹)', 'Amount to Repay (₹)'],
-    ['Borrowing', 'e.g. State Bank of India', '0', '0', '0'],
-    ['Borrowing', 'Add more rows as needed', '0', '0', '0'],
-    ['Mortgage', 'e.g. HDFC Bank Ltd', '0', '0', '0'],
-    ['Mortgage', 'Add more rows as needed', '0', '0', '0'],
+  // ── Sheet 1: Borrowings ──────────────────────────────────────────────────
+  const bHeaders = ['Name of Lender', 'Amount Disbursed (₹)', 'Amount Pending for Disbursement (₹)', 'Amount to be Repaid (₹)'];
+  const bSample = [
+    ['State Bank of India',  '5,00,00,000', '2,00,00,000', '4,50,00,000'],
+    ['HDFC Bank Ltd',        '3,00,00,000',   '50,00,000', '2,80,00,000'],
   ];
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:14}, {wch:30}, {wch:22}, {wch:22}, {wch:22}];
+  const wsB = XLSX.utils.aoa_to_sheet([bHeaders, ...bSample]);
+  wsB['!cols'] = [{wch:36}, {wch:24}, {wch:34}, {wch:26}];
+
+  // ── Sheet 2: Mortgages ───────────────────────────────────────────────────
+  const mHeaders = ['Mortgaged To (Name of Entity / Institution)', 'Amount Disbursed (₹)', 'Amount Pending for Disbursement (₹)', 'Amount to be Repaid (₹)'];
+  const mSample = [
+    ['State Bank of India', '8,00,00,000', '3,00,00,000', '7,00,00,000'],
+  ];
+  const wsM = XLSX.utils.aoa_to_sheet([mHeaders, ...mSample]);
+  wsM['!cols'] = [{wch:44}, {wch:24}, {wch:34}, {wch:26}];
+
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Borrowings');
-  XLSX.writeFile(wb, 'RERA_Form4_Borrowings_Template.xlsx');
+  XLSX.utils.book_append_sheet(wb, wsB, 'Borrowings');
+  XLSX.utils.book_append_sheet(wb, wsM, 'Mortgages');
+  XLSX.writeFile(wb, 'RERA_Form4_Borrowings_Mortgages_Template.xlsx');
 }
 </script>
 </body>
