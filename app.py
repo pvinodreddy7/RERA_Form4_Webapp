@@ -85,6 +85,30 @@ def pct(v):
     except:
         return v
 
+# ─── Document Text Extraction (for AI parsing of previous certificates) ───────
+
+def extract_docx_text(file_bytes):
+    """Extract all text from a .docx in document order (paragraphs + tables)."""
+    ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+    doc = Document(io.BytesIO(file_bytes))
+    lines = []
+    for element in doc.element.body:
+        tag = element.tag.split('}')[-1]
+        if tag == 'p':
+            text = ''.join(t.text or '' for t in element.iter(f'{{{ns}}}t')).strip()
+            if text:
+                lines.append(text)
+        elif tag == 'tbl':
+            for tr in element.iter(f'{{{ns}}}tr'):
+                cells = []
+                for tc in tr.findall(f'{{{ns}}}tc'):
+                    cell_text = ''.join(t.text or '' for t in tc.iter(f'{{{ns}}}t')).strip()
+                    if cell_text:
+                        cells.append(cell_text)
+                if cells:
+                    lines.append(' | '.join(cells))
+    return '\n'.join(lines)
+
 # ─── Header ───────────────────────────────────────────────────────────────────
 
 def add_rera_header(doc):
@@ -639,6 +663,71 @@ def generate():
         return send_file(buf, as_attachment=True,
                          download_name=f'Form4_{project}_{quarter}.docx',
                          mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    except Exception as e:
+        import traceback
+        return {'error': str(e), 'trace': traceback.format_exc()}, 500
+
+
+@app.route('/parse_certificate', methods=['POST'])
+def parse_certificate():
+    """Parse a previous-quarter Form 4 .docx using Claude API and return structured JSON."""
+    try:
+        import anthropic as _ant
+        import json as _json
+    except ImportError:
+        return {'error': 'anthropic package not installed. Run: pip install anthropic'}, 500
+    try:
+        f = request.files.get('file')
+        if not f:
+            return {'error': 'No file uploaded'}, 400
+        text = extract_docx_text(f.read())
+        if not text.strip():
+            return {'error': 'Could not extract any text from this document.'}, 400
+
+        client = _ant.Anthropic()
+        prompt = (
+            "You are parsing a Karnataka RERA Form 4 Chartered Accountant's Certificate document.\n"
+            "Extract the following fields and return ONLY a valid JSON object — no markdown, no explanation.\n"
+            'Use "" for any field not found. Numeric amounts should use Indian comma formatting (e.g. "10,00,00,000").\n\n'
+            "Fields to extract:\n"
+            "  krera_reg          — KRERA registration number\n"
+            "  project_name       — project name\n"
+            "  promoter_name      — promoter / company name\n"
+            "  project_cost       — total project cost (digits + commas only, no ₹)\n"
+            "  project_cost_words — cost in words\n"
+            "  place              — place of signing\n"
+            "  b1_holder, b1_krbad, b1_acno, b1_bank, b1_ifsc, b1_branch  — 100% Collection Account\n"
+            "  b2_holder, b2_krbad, b2_acno, b2_bank, b2_ifsc, b2_branch  — 70% Designated Account\n"
+            "  b3_holder, b3_krbad, b3_acno, b3_bank, b3_ifsc, b3_branch  — 30% Account\n"
+            "  firm_name, frn, ca_name, ca_designation, membership_no\n"
+            "  lc_a_est, lc_a_inc  — land acquisition cost (estimated, incurred)\n"
+            "  lc_b_est, lc_b_inc  — TDR cost (estimated, incurred)\n"
+            "  lc_c_est, lc_c_inc  — statutory costs (estimated, incurred)\n"
+            "  dc_i_est            — construction cost estimated (Engineer certificate)\n"
+            "  dc_ii_inc           — actual construction cost incurred\n"
+            "  dc_iii_est, dc_iii_inc — on-site expenditure\n"
+            "  dc_tax_est, dc_tax_inc — taxes/cess\n"
+            "  dc_int_est, dc_int_inc — interest on construction finance\n"
+            "  arch_pct            — architect completion percentage (number only)\n"
+            "  withdrawn           — amount withdrawn till date\n"
+            "  asr_rate            — ready reckoner rate per sq.mt.\n"
+            "  unsold_flats        — number of unsold flats\n"
+            "  unsold_total_area   — unsold carpet area in sq.mts.\n"
+            "  total_saleable_area — total saleable area if mentioned\n\n"
+            f"Document text:\n{text[:10000]}"
+        )
+
+        msg = client.messages.create(
+            model='claude-3-haiku-20240307',
+            max_tokens=2048,
+            messages=[{'role': 'user', 'content': prompt}]
+        )
+        result = msg.content[0].text.strip()
+        # Strip markdown fences if the model adds them
+        if result.startswith('```'):
+            result = '\n'.join(result.split('\n')[1:]).rsplit('```', 1)[0].strip()
+        return _json.loads(result)
+
     except Exception as e:
         import traceback
         return {'error': str(e), 'trace': traceback.format_exc()}, 500

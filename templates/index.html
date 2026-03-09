@@ -128,6 +128,30 @@
     .gen-txt{color:#fff;font-size:1.05rem;font-weight:600}
 
     @media(max-width:700px){.g2,.g3,.g4{grid-template-columns:1fr}.full{grid-column:1}}
+
+    /* ── Getting Started Modal ─────────────────────────────────────────────── */
+    .gs-overlay{display:flex;position:fixed;inset:0;background:rgba(10,25,47,.72);z-index:10000;align-items:center;justify-content:center;padding:20px}
+    .gs-box{background:#fff;border-radius:18px;padding:38px 40px 30px;max-width:600px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,.28);text-align:center}
+    .gs-logo{width:52px;height:52px;background:linear-gradient(135deg,#1F497D,#2e6fad);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:#fff;margin:0 auto 14px}
+    .gs-box h2{font-size:1.3rem;font-weight:800;color:#1F497D;margin-bottom:8px}
+    .gs-box > p{font-size:.88rem;color:#666;margin-bottom:24px;line-height:1.55}
+    .gs-options{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+    .gs-opt{display:flex;flex-direction:column;align-items:center;gap:9px;border:2.5px solid #d0d9e6;border-radius:14px;padding:22px 20px 18px;cursor:pointer;flex:1;min-width:190px;max-width:240px;transition:all .2s;background:#fafcff}
+    .gs-opt:hover{border-color:#1F497D;background:#eaf0fb;transform:translateY(-2px);box-shadow:0 4px 16px rgba(31,73,125,.14)}
+    .gs-opt .go-icon{font-size:2.4rem}
+    .gs-opt .go-title{font-weight:700;color:#1F497D;font-size:.9rem}
+    .gs-opt .go-desc{font-size:.75rem;color:#777;text-align:center;line-height:1.4}
+    /* Upload section inside modal */
+    .gs-upload{text-align:left;margin-top:4px}
+    .gs-upload-info{font-size:.83rem;color:#444;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    .gs-divider{border:none;border-top:1px solid #e8eef6;margin:18px 0}
+    .gs-back{font-size:.78rem;color:#aaa;cursor:pointer;margin-right:14px}
+    .gs-back:hover{color:#555}
+    .gs-skip{font-size:.78rem;color:#aaa;cursor:pointer;text-decoration:underline}
+    .gs-skip:hover{color:#555}
+    .gs-footer{margin-top:6px;color:#bbb;font-size:.77rem}
+    .gs-parsing{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fffbea;border:1.5px solid #ffd54f;border-radius:8px;font-size:.82rem;font-weight:600;color:#7a5700;margin-top:10px}
+    .gs-spin{width:18px;height:18px;border:3px solid rgba(122,87,0,.25);border-top-color:#f59c00;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
   </style>
 </head>
 <body>
@@ -137,6 +161,51 @@
   <div>
     <h1>PVKR &amp; CO LLP — RERA Form 4 Generator</h1>
     <p>Karnataka Real Estate Regulatory Authority | Chartered Accountant's Certificate</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ GETTING STARTED MODAL ══════════════════════════ -->
+<div class="gs-overlay" id="gsModal">
+  <div class="gs-box">
+    <div class="gs-logo">CA</div>
+    <h2>RERA Form 4 Generator</h2>
+    <p>Is this the <strong>first Form 4 certificate</strong> being generated for this project?</p>
+
+    <!-- Main choice buttons -->
+    <div class="gs-options" id="gsMainOpts">
+      <div class="gs-opt" onclick="gsChooseFirst()">
+        <div class="go-icon">🆕</div>
+        <div class="go-title">Yes — First Certificate</div>
+        <div class="go-desc">No previous certificate exists. Upload a metadata file or fill in all details manually.</div>
+      </div>
+      <div class="gs-opt" onclick="gsChoosePrev()">
+        <div class="go-icon">📄</div>
+        <div class="go-title">No — Previous Certificate Exists</div>
+        <div class="go-desc">Upload last quarter's Form 4 (.docx) and AI will auto-fill project details, bank accounts and costs.</div>
+      </div>
+    </div>
+
+    <!-- Previous certificate upload (shown after choosing "No") -->
+    <div id="gsPrevSection" style="display:none" class="gs-upload">
+      <hr class="gs-divider"/>
+      <div class="gs-upload-info">📄 Upload previous quarter's Form 4 certificate (.docx)</div>
+      <div class="upload-zone" id="gsPrevZone" style="padding:16px 20px"
+           ondragover="handleGsDragOver(event)" ondragleave="handleGsDragLeave(event)" ondrop="handleGsDrop(event)"
+           onclick="document.getElementById('gsPrevInput').click()">
+        <input type="file" id="gsPrevInput" accept=".docx" onchange="handleGsFileSelect(event)"/>
+        <div class="uz-icon" style="font-size:1.6rem">📂</div>
+        <div class="uz-title" style="font-size:.85rem">Drop .docx file here, or click to browse</div>
+        <button class="uz-btn" style="margin-top:8px;padding:5px 16px;font-size:.8rem"
+                onclick="event.stopPropagation(); document.getElementById('gsPrevInput').click()">Choose File</button>
+      </div>
+      <div id="gsPrevStatus"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="gs-footer">
+      <span class="gs-back" id="gsBackBtn" style="display:none" onclick="gsGoBack()">← Back</span>
+      <span class="gs-skip" onclick="gsSkip()">Skip — fill all fields manually</span>
+    </div>
   </div>
 </div>
 
@@ -660,16 +729,16 @@
       <div class="card">
         <div class="card-title"><span class="badge">9</span> Chartered Accountant Details</div>
         <div class="grid g2">
-          <div class="fg"><label>Firm Name</label><input id="firm_name" value="PVKR & Co LLP"/></div>
-          <div class="fg"><label>FRN</label><input id="frn" placeholder="S000051"/></div>
-          <div class="fg"><label>CA Name (without CA prefix)</label><input id="ca_name" placeholder="PATHIREDDY VINOD KUMAR REDDY"/></div>
-          <div class="fg"><label>Designation</label><input id="ca_designation" placeholder="Partner" value="Partner"/></div>
-          <div class="fg"><label>Membership Number</label><input id="membership_no" placeholder="252239"/></div>
-          <div class="fg full"><label>CA Address</label><input id="ca_address" placeholder="No 402/30, Venkateshwara Colony, Madiwala, Bangalore, 560068"/></div>
-          <div class="fg"><label>Contact Number</label><input id="ca_contact" placeholder="9916147778"/></div>
-          <div class="fg"><label>Email ID</label><input id="ca_email" placeholder="vinod@pvkr.in"/></div>
-          <div class="fg"><label>UDIN (Certificates section)</label><input id="udin1" placeholder="26252239XDDFPJ9246"/></div>
-          <div class="fg"><label>UDIN (Annexure A section — if different)</label><input id="udin2" placeholder="Same as above if blank"/></div>
+          <div class="fg"><label>Firm Name</label><input id="firm_name" placeholder="e.g. XYZ & Co LLP"/></div>
+          <div class="fg"><label>FRN</label><input id="frn" placeholder="e.g. S000001"/></div>
+          <div class="fg"><label>CA Name (without CA prefix)</label><input id="ca_name" placeholder="e.g. FULL NAME OF CA"/></div>
+          <div class="fg"><label>Designation</label><input id="ca_designation" placeholder="e.g. Partner" value="Partner"/></div>
+          <div class="fg"><label>Membership Number</label><input id="membership_no" placeholder="e.g. 000001"/></div>
+          <div class="fg full"><label>CA Address</label><input id="ca_address" placeholder="e.g. No. 1, Example Street, Bangalore 560001"/></div>
+          <div class="fg"><label>Contact Number</label><input id="ca_contact" placeholder="e.g. 9000000000"/></div>
+          <div class="fg"><label>Email ID</label><input id="ca_email" placeholder="e.g. ca@example.com"/></div>
+          <div class="fg"><label>UDIN (Certificates section)</label><input id="udin1" placeholder="e.g. 000000AAAA00000000"/></div>
+          <div class="fg"><label>UDIN (Annexure A section — if different)</label><input id="udin2" placeholder="Leave blank if same as above"/></div>
         </div>
       </div>
       <div class="nav">
@@ -1113,49 +1182,51 @@ function addObsCompliance() {
 
 // ─── Project Metadata Upload ───────────────────────────────────────────────────
 const META_MAP = {
-  'krera registration number':'krera_reg','krera reg':'krera_reg','krera reg no':'krera_reg','krera registration no':'krera_reg',
+  // Project info
+  'krera registration number':'krera_reg','krera reg':'krera_reg','krera reg no':'krera_reg',
   'project name':'project_name',
   'promoter name':'promoter_name','promoter':'promoter_name',
-  'project cost':'project_cost','project cost (₹)':'project_cost','cost of real estate project':'project_cost','cost of project':'project_cost',
+  'project cost':'project_cost','project cost (₹)':'project_cost','cost of real estate project':'project_cost',
   'project cost in words':'project_cost_words','cost in words':'project_cost_words',
-  'quarter':'quarter_label','quarter for which certificate is issued':'quarter_label',
-  'quarter end date':'quarter_end','quarter end':'quarter_end',
-  'certificate date':'cert_date','cert date':'cert_date',
   'place':'place',
-  'total saleable area (sq.mts.)':'total_saleable_area','total saleable area':'total_saleable_area','saleable area':'total_saleable_area','total saleable area (sqmts)':'total_saleable_area',
+  // Saleable / unsold / ASR
+  'total saleable area (sq.mts.)':'total_saleable_area','total saleable area':'total_saleable_area',
+  'saleable area':'total_saleable_area','total saleable area (sqmts)':'total_saleable_area',
   'ready reckoner rate (₹/sq.mt.)':'asr_rate','ready reckoner rate':'asr_rate','asr rate':'asr_rate','rr rate':'asr_rate',
   'total unsold flats':'unsold_flats','unsold flats':'unsold_flats','number of unsold units':'unsold_flats',
-  'estimated land cost':'lc_a_est','land cost':'lc_a_est',
-  'estimated construction cost':'dc_i_est','construction cost':'dc_i_est',
+  // Cost
+  'estimated land cost':'lc_a_est','land cost (estimated)':'lc_a_est',
+  'estimated construction cost':'dc_i_est','construction cost (estimated)':'dc_i_est',
+  // CA details
   'ca firm name':'firm_name','firm name':'firm_name',
   'frn':'frn','firm registration number':'frn',
   'ca name':'ca_name','chartered accountant name':'ca_name',
   'ca designation':'ca_designation','designation':'ca_designation',
   'membership no':'membership_no','membership number':'membership_no','icai membership no':'membership_no',
   'ca address':'ca_address','office address':'ca_address',
-  'ca contact':'ca_contact','contact':'ca_contact','phone':'ca_contact',
+  'ca contact':'ca_contact','contact number':'ca_contact','phone':'ca_contact',
   'ca email':'ca_email','email':'ca_email',
-  // Bank account 1
-  'account 1 holder':'b1_holder','account 1 - holder name':'b1_holder',
-  'account 1 krera name':'b1_krbad','account 1 - krera name':'b1_krbad',
-  'account 1 number':'b1_acno','account 1 - account number':'b1_acno',
-  'account 1 bank':'b1_bank','account 1 - bank name':'b1_bank',
-  'account 1 ifsc':'b1_ifsc','account 1 - ifsc':'b1_ifsc',
-  'account 1 branch':'b1_branch','account 1 - branch':'b1_branch',
-  // Bank account 2
-  'account 2 holder':'b2_holder','account 2 - holder name':'b2_holder',
-  'account 2 krera name':'b2_krbad','account 2 - krera name':'b2_krbad',
-  'account 2 number':'b2_acno','account 2 - account number':'b2_acno',
-  'account 2 bank':'b2_bank','account 2 - bank name':'b2_bank',
-  'account 2 ifsc':'b2_ifsc','account 2 - ifsc':'b2_ifsc',
-  'account 2 branch':'b2_branch','account 2 - branch':'b2_branch',
-  // Bank account 3
-  'account 3 holder':'b3_holder','account 3 - holder name':'b3_holder',
-  'account 3 krera name':'b3_krbad','account 3 - krera name':'b3_krbad',
-  'account 3 number':'b3_acno','account 3 - account number':'b3_acno',
-  'account 3 bank':'b3_bank','account 3 - bank name':'b3_bank',
-  'account 3 ifsc':'b3_ifsc','account 3 - ifsc':'b3_ifsc',
-  'account 3 branch':'b3_branch','account 3 - branch':'b3_branch',
+  // 100% Collection Account
+  '100% collection account - holder name':'b1_holder','100% collection account holder':'b1_holder',
+  '100% collection account - krera name':'b1_krbad','100% collection account krera name':'b1_krbad',
+  '100% collection account - number':'b1_acno','100% collection account number':'b1_acno',
+  '100% collection account - bank':'b1_bank','100% collection account bank':'b1_bank',
+  '100% collection account - ifsc':'b1_ifsc','100% collection account ifsc':'b1_ifsc',
+  '100% collection account - branch':'b1_branch','100% collection account branch':'b1_branch',
+  // 70% Designated Account
+  '70% designated account - holder name':'b2_holder','70% designated account holder':'b2_holder',
+  '70% designated account - krera name':'b2_krbad','70% designated account krera name':'b2_krbad',
+  '70% designated account - number':'b2_acno','70% designated account number':'b2_acno',
+  '70% designated account - bank':'b2_bank','70% designated account bank':'b2_bank',
+  '70% designated account - ifsc':'b2_ifsc','70% designated account ifsc':'b2_ifsc',
+  '70% designated account - branch':'b2_branch','70% designated account branch':'b2_branch',
+  // 30% Account
+  '30% account - holder name':'b3_holder','30% account holder':'b3_holder',
+  '30% account - krera name':'b3_krbad','30% account krera name':'b3_krbad',
+  '30% account - number':'b3_acno','30% account number':'b3_acno',
+  '30% account - bank':'b3_bank','30% account bank':'b3_bank',
+  '30% account - ifsc':'b3_ifsc','30% account ifsc':'b3_ifsc',
+  '30% account - branch':'b3_branch','30% account branch':'b3_branch',
 };
 
 function handleMetaDragOver(e) { e.preventDefault(); document.getElementById('metaUploadZone').classList.add('drag-over'); }
@@ -1213,49 +1284,61 @@ function processMetaFile(file) {
 function downloadMetaTemplate() {
   const rows = [
     ['Field Name', 'Value', 'Notes'],
+    ['─── Project Details ───────────────────', '', ''],
     ['KRERA Registration Number', '', 'e.g. PRM/KA/RERA/1251/446/PR/230101/000001'],
     ['Project Name', '', 'Full name of the project'],
     ['Promoter Name', '', 'Name of the promoter / company'],
-    ['Project Cost (₹)', '', 'Total project cost in figures (without commas)'],
+    ['Project Cost (₹)', '', 'Total project cost in figures'],
     ['Project Cost in Words', '', 'e.g. Rupees Forty Crores Only'],
-    ['Quarter for which Certificate is Issued', '', 'e.g. Q3 2025-26'],
-    ['Quarter End Date', '', 'e.g. 31st December 2025'],
-    ['Certificate Date', '', 'e.g. 15th January 2026'],
-    ['Place', 'Bangalore', ''],
+    ['Place', 'Bangalore', 'Place of signing'],
+    ['─── Saleable / Unsold Area ────────────', '', '⚠ Quarter End Date & Certificate Date are entered manually in the app'],
     ['Total Saleable Area (sq.mts.)', '', 'Total saleable area — used to auto-calc unsold area'],
     ['Ready Reckoner Rate (₹/sq.mt.)', '', 'ASR rate for unsold inventory valuation'],
     ['Total Unsold Flats', '', 'Number of unsold units'],
-    ['Estimated Land Cost', '', 'Land cost item (a) — estimated'],
-    ['Estimated Construction Cost', '', 'Construction cost (i) — as certified by Engineer'],
-    ['Account 1 Holder', '', '100% Collection Account — Holder Name'],
-    ['Account 1 KRERA Name', '', 'Account name as per KRERA'],
-    ['Account 1 Number', '', 'Account number'],
-    ['Account 1 Bank', '', 'Bank name'],
-    ['Account 1 IFSC', '', 'IFSC code'],
-    ['Account 1 Branch', '', 'Branch name'],
-    ['Account 2 Holder', '', '70% Designated Account — Holder Name'],
-    ['Account 2 KRERA Name', '', ''],
-    ['Account 2 Number', '', ''],
-    ['Account 2 Bank', '', ''],
-    ['Account 2 IFSC', '', ''],
-    ['Account 2 Branch', '', ''],
-    ['Account 3 Holder', '', '30% Account — Holder Name'],
-    ['Account 3 KRERA Name', '', ''],
-    ['Account 3 Number', '', ''],
-    ['Account 3 Bank', '', ''],
-    ['Account 3 IFSC', '', ''],
-    ['Account 3 Branch', '', ''],
-    ['CA Firm Name', 'PVKR & Co LLP', ''],
-    ['FRN', '', 'e.g. S000051'],
-    ['CA Name', '', 'CA name without CA prefix'],
-    ['CA Designation', 'Partner', ''],
-    ['Membership No', '', 'e.g. 252239'],
+    ['─── Cost Estimates ────────────────────', '', ''],
+    ['Estimated Land Cost', '', 'Land cost item (a) — estimated amount'],
+    ['Estimated Construction Cost', '', 'Construction cost (i) as certified by Engineer'],
+    ['─── 100% Collection Account ───────────', '', ''],
+    ['100% Collection Account - Holder Name', '', 'Name of account holder'],
+    ['100% Collection Account - KRERA Name', '', 'Account name as per KRERA records'],
+    ['100% Collection Account - Number', '', 'Bank account number'],
+    ['100% Collection Account - Bank', '', 'Bank name'],
+    ['100% Collection Account - IFSC', '', 'IFSC code'],
+    ['100% Collection Account - Branch', '', 'Branch name'],
+    ['─── 70% Designated Account ────────────', '', ''],
+    ['70% Designated Account - Holder Name', '', ''],
+    ['70% Designated Account - KRERA Name', '', ''],
+    ['70% Designated Account - Number', '', ''],
+    ['70% Designated Account - Bank', '', ''],
+    ['70% Designated Account - IFSC', '', ''],
+    ['70% Designated Account - Branch', '', ''],
+    ['─── 30% Account ───────────────────────', '', ''],
+    ['30% Account - Holder Name', '', ''],
+    ['30% Account - KRERA Name', '', ''],
+    ['30% Account - Number', '', ''],
+    ['30% Account - Bank', '', ''],
+    ['30% Account - IFSC', '', ''],
+    ['30% Account - Branch', '', ''],
+    ['─── CA / Firm Details ─────────────────', '', ''],
+    ['CA Firm Name', '', 'Full firm name'],
+    ['FRN', '', 'e.g. S000001'],
+    ['CA Name', '', 'Full name without CA prefix'],
+    ['CA Designation', 'Partner', 'Partner / Proprietor etc.'],
+    ['Membership No', '', 'ICAI membership number'],
     ['CA Address', '', 'Full office address'],
     ['CA Contact', '', 'Mobile / phone number'],
     ['CA Email', '', 'Email ID'],
   ];
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:42}, {wch:38}, {wch:38}];
+  ws['!cols'] = [{wch:44}, {wch:36}, {wch:42}];
+  // Style section header rows (grey fill)
+  rows.forEach((r, i) => {
+    if (String(r[0]).startsWith('─')) {
+      const cellRef = XLSX.utils.encode_cell({r: i, c: 0});
+      if (!ws[cellRef]) return;
+      ws[cellRef].s = {fill:{fgColor:{rgb:'E8EEF6'}}, font:{bold:true, color:{rgb:'1F497D'}}};
+    }
+  });
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Project Metadata');
   XLSX.writeFile(wb, 'RERA_Form4_Project_Metadata_Template.xlsx');
@@ -1469,6 +1552,92 @@ function processBorrowingsFile(file) {
     }
   };
   reader.readAsArrayBuffer(file);
+}
+
+// ─── Getting Started Modal ─────────────────────────────────────────────────────
+function gsSkip() {
+  document.getElementById('gsModal').style.display = 'none';
+}
+
+function gsChooseFirst() {
+  // First certificate — just close modal, user fills manually or uses metadata upload
+  gsSkip();
+}
+
+function gsChoosePrev() {
+  document.getElementById('gsMainOpts').style.display = 'none';
+  document.getElementById('gsPrevSection').style.display = 'block';
+  document.getElementById('gsBackBtn').style.display = 'inline';
+}
+
+function gsGoBack() {
+  document.getElementById('gsMainOpts').style.display = 'flex';
+  document.getElementById('gsPrevSection').style.display = 'none';
+  document.getElementById('gsBackBtn').style.display = 'none';
+  document.getElementById('gsPrevStatus').innerHTML = '';
+}
+
+function handleGsDragOver(e) {
+  e.preventDefault();
+  document.getElementById('gsPrevZone').classList.add('drag-over');
+}
+function handleGsDragLeave(e) {
+  document.getElementById('gsPrevZone').classList.remove('drag-over');
+}
+function handleGsDrop(e) {
+  e.preventDefault();
+  document.getElementById('gsPrevZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) parsePrevCertificate(file);
+}
+function handleGsFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) parsePrevCertificate(file);
+  e.target.value = '';
+}
+
+async function parsePrevCertificate(file) {
+  const statusEl = document.getElementById('gsPrevStatus');
+
+  // Show parsing spinner
+  statusEl.innerHTML = `
+    <div class="gs-parsing">
+      <div class="gs-spin"></div>
+      Parsing certificate with AI — this may take 15–20 seconds...
+    </div>`;
+
+  const fd = new FormData();
+  fd.append('file', file);
+
+  try {
+    const resp = await fetch('/parse_certificate', { method: 'POST', body: fd });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Server error');
+
+    let filled = 0;
+    Object.entries(data).forEach(([id, val]) => {
+      if (!val) return;
+      const el = document.getElementById(id);
+      if (el) { el.value = String(val); filled++; }
+    });
+
+    recalc();
+
+    statusEl.innerHTML = `
+      <div class="upload-status success" style="display:flex;margin-top:10px">
+        ✅ Extracted <b>${filled} fields</b> from <b>${file.name}</b>.
+        Please update quarter-specific dates and amounts for the new quarter.
+      </div>`;
+
+    // Auto-close after 3 seconds
+    setTimeout(gsSkip, 3000);
+
+  } catch(err) {
+    statusEl.innerHTML = `
+      <div class="upload-status error" style="display:flex;margin-top:10px">
+        ❌ ${err.message}
+      </div>`;
+  }
 }
 
 function downloadBorrowingsTemplate() {
