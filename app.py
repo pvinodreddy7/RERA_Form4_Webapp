@@ -1,6 +1,16 @@
 from flask import Flask, render_template, request, send_file
 import io, os
 from docx import Document
+
+# ─── Load .env if present ─────────────────────────────────────────────────────
+_env_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(_env_path):
+    with open(_env_path) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith('#') and '=' in _line:
+                _k, _v = _line.split('=', 1)
+                os.environ.setdefault(_k.strip(), _v.strip())
 from docx.shared import Pt, Inches, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
