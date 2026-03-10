@@ -315,23 +315,6 @@
             <input id="place" value="Bangalore"/></div>
         </div>
 
-        <div class="sub-heading">Qualification / Observations</div>
-        <div class="hint" style="margin-bottom:8px">Click a template below to append it to observations. Values are auto-filled from your form data.</div>
-        <div class="obs-chips">
-          <button type="button" class="obs-chip" onclick="addObsEstimatedCost()">📝 Estimated Cost Note</button>
-          <button type="button" class="obs-chip" onclick="addObsBankChange()">🏦 Bank Account Change</button>
-          <button type="button" class="obs-chip" onclick="addObsCollected()">💰 Collected &amp; Deposited</button>
-          <button type="button" class="obs-chip" onclick="addObsArchitect()">🏗 Architect's Certificate</button>
-          <button type="button" class="obs-chip" onclick="addObsWithdrawable()">📊 Withdrawable Amount</button>
-          <button type="button" class="obs-chip" onclick="addObsCompliance()">✅ RERA Compliance</button>
-          <button type="button" class="obs-chip danger" onclick="clearObs()">🗑 Clear All</button>
-        </div>
-        <div class="grid g1">
-          <div class="fg">
-            <label>Observation / Notes (will appear in the certificate)</label>
-            <textarea id="observations" rows="6" placeholder="Click a template above or type your observations here..."></textarea>
-          </div>
-        </div>
       </div>
       <div class="nav"><span></span><button type="button" class="btn btn-pri" onclick="next(0)">Next: Bank Accounts →</button></div>
     </div>
@@ -823,6 +806,25 @@
           <div class="fg"><label>UDIN (Annexure A section — if different)</label><input id="udin2" placeholder="Leave blank if same as above"/></div>
         </div>
       </div>
+      <!-- Qualification / Observations card — placed last so templates pull auto-calculated values -->
+      <div class="card" style="margin-top:0">
+        <div class="card-title"><span class="badge">✎</span> Qualification / Observations</div>
+        <div class="hint" style="margin-bottom:10px">Click a template to append it. Values are auto-filled from your entered data.</div>
+        <div class="obs-chips">
+          <button type="button" class="obs-chip" onclick="addObsEstimatedCost()">📝 Estimated Cost Note</button>
+          <button type="button" class="obs-chip" onclick="addObsBankChange()">🏦 Bank Account Change</button>
+          <button type="button" class="obs-chip" onclick="addObsCollected()">💰 Collected &amp; Deposited</button>
+          <button type="button" class="obs-chip" onclick="addObsArchitect()">🏗 Architect's Certificate</button>
+          <button type="button" class="obs-chip" onclick="addObsWithdrawable()">📊 Withdrawable Amount</button>
+          <button type="button" class="obs-chip" onclick="addObsCompliance()">✅ RERA Compliance</button>
+          <button type="button" class="obs-chip danger" onclick="clearObs()">🗑 Clear All</button>
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <label>Observation / Notes (will appear in the certificate)</label>
+          <textarea id="observations" rows="7" placeholder="Click a template above or type your observations here..."></textarea>
+        </div>
+      </div>
+
       <div class="nav">
         <button type="button" class="btn btn-sec" onclick="prev(8)">← Back</button>
         <button type="button" class="btn btn-pri" onclick="next(8)">Review &amp; Generate →</button>
