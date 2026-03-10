@@ -95,6 +95,52 @@ def pct(v):
     except:
         return v
 
+def remove_table_borders(tbl):
+    """Remove all visible borders from a python-docx table."""
+    # Table-level borders
+    tblPr = tbl._tbl.get_or_add_tblPr()
+    tblBorders = OxmlElement('w:tblBorders')
+    for side in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
+        bd = OxmlElement(f'w:{side}')
+        bd.set(qn('w:val'), 'none'); bd.set(qn('w:sz'), '0')
+        bd.set(qn('w:space'), '0'); bd.set(qn('w:color'), 'auto')
+        tblBorders.append(bd)
+    tblPr.append(tblBorders)
+    # Cell-level borders
+    for row in tbl.rows:
+        for cell in row.cells:
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            tcBorders = OxmlElement('w:tcBorders')
+            for side in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
+                bd = OxmlElement(f'w:{side}')
+                bd.set(qn('w:val'), 'none'); bd.set(qn('w:sz'), '0')
+                bd.set(qn('w:space'), '0'); bd.set(qn('w:color'), 'auto')
+                tcBorders.append(bd)
+            tcPr.append(tcBorders)
+
+def lv_table(doc, pairs, w1=2.4, w2=4.5, indent=0, size=10, space_after=2):
+    """Borderless 2-column label : value table for professional output alignment."""
+    tbl = doc.add_table(rows=len(pairs), cols=2)
+    remove_table_borders(tbl)
+    for i, (label, value) in enumerate(pairs):
+        r = tbl.rows[i]
+        c0, c1 = r.cells[0], r.cells[1]
+        c0.width = Inches(w1); c1.width = Inches(w2)
+        p0 = c0.paragraphs[0]
+        p0.paragraph_format.space_before = Pt(1)
+        p0.paragraph_format.space_after = Pt(space_after)
+        if indent:
+            p0.paragraph_format.left_indent = Inches(indent)
+        para_run(p0, label, size=size)
+        p1 = c1.paragraphs[0]
+        p1.paragraph_format.space_before = Pt(1)
+        p1.paragraph_format.space_after = Pt(space_after)
+        if indent:
+            p1.paragraph_format.left_indent = Inches(0.05)
+        para_run(p1, f': {value}', size=size)
+    return tbl
+
 # ─── Document Text Extraction (for AI parsing of previous certificates) ───────
 
 def extract_docx_text(file_bytes):
@@ -458,22 +504,20 @@ def generate_form4(d):
     pd.paragraph_format.space_after = Pt(4)
     para_run(pd, f'Date: {d.get("cert_date","")}', size=10)
 
-    # Fields
-    def field(label, value):
-        p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(2)
-        para_run(p, f'{label}\t: {value}', size=10)
-
-    field('KRERA Registration Number', d.get('krera_reg',''))
-    field('Project Name    \t\t', d.get('project_name',''))
-    field('Promoter Name\t\t', d.get('promoter_name',''))
+    # Project info fields — use borderless table for clean alignment
     cost_str = f'₹ {d.get("project_cost","")}/-'
     if d.get('project_cost_words'):
         cost_str += f' ({d.get("project_cost_words","")})'
-    field('Cost of Real Estate Project\t', cost_str)
+    proj_pairs = [
+        ('KRERA Registration Number', d.get('krera_reg','')),
+        ('Project Name',              d.get('project_name','')),
+        ('Promoter Name',             d.get('promoter_name','')),
+        ('Cost of Real Estate Project', cost_str),
+    ]
     if d.get('quarter_label'):
-        field('Quarter\t\t\t\t', d.get('quarter_label',''))
-    field('Quarter End Date\t\t', d.get('quarter_end',''))
+        proj_pairs.append(('Quarter', d.get('quarter_label','')))
+    proj_pairs.append(('Quarter End Date', d.get('quarter_end','')))
+    lv_table(doc, proj_pairs, w1=2.5, w2=4.4)
 
     doc.add_paragraph()
 
@@ -485,20 +529,16 @@ def generate_form4(d):
     body2.paragraph_format.space_after = Pt(6)
     para_run(body2, f'The Promoter in compliance with section 4(2)(l)(D), of the Real Estate (Regulation and Development) Act, 2016 has deposited 70% of the amounts received from the allottees of this project (refer observations) in the following account:', size=10)
 
-    # Three bank accounts
+    # Three bank accounts — borderless tables for aligned output
     def bank_block(holder, krbad, acno, bank, ifsc, branch):
-        for label, val in [
+        lv_table(doc, [
             ('Name of the Account Holder', holder),
-            ('Name of the Designated bank account as per KRERA', krbad),
+            ('Account Name as per KRERA', krbad),
             ('Designated Account Number', acno),
-            ('Bank Name\t\t\t', bank),
-            ('IFSC Code\t\t\t', ifsc),
-            ('Branch Name\t\t\t', branch),
-        ]:
-            p = doc.add_paragraph()
-            p.paragraph_format.space_after = Pt(1)
-            p.paragraph_format.left_indent = Inches(0.3)
-            para_run(p, f'{label}\t: {val}', size=10)
+            ('Bank Name',   bank),
+            ('IFSC Code',   ifsc),
+            ('Branch Name', branch),
+        ], w1=2.7, w2=4.2, indent=0.3, space_after=1)
 
     doc.add_paragraph()
     bank_block(d.get('b1_holder',''), d.get('b1_krbad',''), d.get('b1_acno',''),
@@ -739,8 +779,14 @@ def parse_certificate():
             "  asr_rate            — ready reckoner rate per sq.mt.\n"
             "  unsold_flats        — number of unsold flats\n"
             "  unsold_total_area   — unsold carpet area in sq.mts.\n"
-            "  total_saleable_area — total saleable area if mentioned\n\n"
-            f"Document text:\n{text[:12000]}"
+            "  total_saleable_area — total saleable area if mentioned\n"
+            "  q_close_bal        — quarterly closing balance as per bank statement (digits+commas, no ₹)\n"
+            "  q_close_date       — quarterly closing balance date (e.g. '31st December 2025')\n"
+            "  c_dep_sales        — cumulative total deposits from sale proceeds (digits+commas, no ₹)\n"
+            "  c_dep_other        — cumulative total other deposits (digits+commas, no ₹)\n"
+            "  c_wdl_sales        — cumulative total withdrawals from sale proceeds (digits+commas, no ₹)\n"
+            "  c_wdl_other        — cumulative total other withdrawals (digits+commas, no ₹)\n\n"
+            f"Document text:\n{text[:14000]}"
         )
 
         response = client.models.generate_content(

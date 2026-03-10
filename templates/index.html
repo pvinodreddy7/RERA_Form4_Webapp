@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RERA Form 4 Generator — PVKR & CO LLP</title>
+  <title>RERA Form 4 Generator</title>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -172,7 +172,13 @@
     /* ── Transaction Section Boxes (Bank Transactions step) ────────────────── */
     .txn-box{border-radius:8px;border:1.5px solid #d0dce8;margin-bottom:18px;overflow:hidden}
     .txn-hdr{padding:9px 16px;background:#f0f4fb;border-bottom:1.5px solid #d0dce8;font-weight:700;font-size:.85rem;color:#1F497D;display:flex;align-items:center;gap:8px}
-    .txn-fields{padding:14px 0 4px}
+    .txn-fields{padding:6px 0 4px}
+
+    /* ── Key-Value side-by-side grid ───────────────────────────────────────── */
+    .kv-grid{display:grid;grid-template-columns:260px 1fr;gap:7px 16px;align-items:center;padding:8px 18px 10px}
+    .kv-grid label{font-size:.79rem;font-weight:600;color:#444;margin:0}
+    .kv-grid label .calc{color:#2980b9;font-size:.68rem;font-weight:400;margin-left:4px;display:block;margin-top:1px}
+    @media(max-width:700px){.kv-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -180,8 +186,9 @@
 <div class="top-bar">
   <div class="logo">CA</div>
   <div>
-    <h1>PVKR &amp; CO LLP — RERA Form 4 Generator</h1>
+    <h1>RERA Form 4 Generator</h1>
     <p>Karnataka Real Estate Regulatory Authority | Chartered Accountant's Certificate</p>
+    <p style="font-size:.72rem;opacity:.6;margin-top:1px">Developed by PVKR &amp; Co LLP</p>
   </div>
 </div>
 
@@ -209,6 +216,18 @@
     <!-- Previous certificate upload (shown after choosing "No") -->
     <div id="gsPrevSection" style="display:none" class="gs-upload">
       <hr class="gs-divider"/>
+      <!-- Quarter relationship selector -->
+      <div style="background:#f7faff;border:1.5px solid #c8d8ec;border-radius:9px;padding:12px 16px;margin-bottom:14px;text-align:left">
+        <div style="font-weight:700;color:#1F497D;font-size:.85rem;margin-bottom:9px">📅 What is this certificate?</div>
+        <label style="display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;cursor:pointer;font-size:.82rem;font-weight:400;color:#333">
+          <input type="radio" name="prevQtrType" id="prevQtrImmediate" value="immediate" checked style="margin-top:2px;width:auto;flex-shrink:0"/>
+          <span><strong>Immediate previous quarter</strong> — closing balances become opening balances for this quarter; cumulative data carries forward</span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:.82rem;font-weight:400;color:#333">
+          <input type="radio" name="prevQtrType" id="prevQtrOlder" value="older" style="margin-top:2px;width:auto;flex-shrink:0"/>
+          <span><strong>Older quarter</strong> — only permanent data copied (project info, bank accounts, CA details, cost estimates)</span>
+        </label>
+      </div>
       <div class="gs-upload-info">📄 Upload previous quarter's Form 4 certificate (.docx)</div>
       <div class="upload-zone" id="gsPrevZone" style="padding:16px 20px"
            ondragover="handleGsDragOver(event)" ondragleave="handleGsDragLeave(event)" ondrop="handleGsDrop(event)"
@@ -267,7 +286,7 @@
           <div class="uz-icon">🗂</div>
           <div class="uz-title">Upload Project Metadata File</div>
           <div class="uz-sub">Drag &amp; drop your metadata Excel here, or click to browse</div>
-          <button class="uz-btn" onclick="event.stopPropagation(); document.getElementById('metaXlsxInput').click()">Choose File</button>
+          <button type="button" class="uz-btn" onclick="event.stopPropagation(); document.getElementById('metaXlsxInput').click()">Choose File</button>
         </div>
         <div class="upload-status" id="metaUploadStatus"></div>
       </div>
@@ -545,7 +564,7 @@
             Columns: <b>Section</b> (Borrowing/Mortgage) | <b>Name</b> | <b>Amount Disbursed</b> | <b>Amount Pending</b> | <b>Amount to Repay</b>
             <span class="template-link" onclick="event.stopPropagation(); downloadBorrowingsTemplate()">⬇ Download Template</span>
           </div>
-          <button class="uz-btn" onclick="event.stopPropagation(); document.getElementById('borrowXlsxInput').click()">Choose File</button>
+          <button type="button" class="uz-btn" onclick="event.stopPropagation(); document.getElementById('borrowXlsxInput').click()">Choose File</button>
         </div>
         <div class="upload-status" id="borrowUploadStatus"></div>
 
@@ -600,15 +619,15 @@
         <div class="txn-box">
           <div class="txn-hdr">📊 Quarterly Receipts Summary</div>
           <div class="txn-fields">
-            <div class="grid g2">
-              <div class="fg"><label>Total Number of Units Booked (quarter)</label>
-                <input id="units_booked" placeholder="30"/></div>
-              <div class="fg"><label>Total Amount Realized from Sale of Units (quarter) (₹)</label>
-                <input id="total_realized" placeholder="3,00,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Total Amount Deposited into Bank (quarter) (₹)</label>
-                <input id="total_deposited" placeholder="2,10,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>% of Deposit Made <span class="calc">● Auto</span></label>
-                <input id="pct_deposited" class="auto" readonly tabindex="-1"/></div>
+            <div class="kv-grid">
+              <label>Total Number of Units Booked (quarter)</label>
+              <input id="units_booked" placeholder="30"/>
+              <label>Total Amount Realized from Sale of Units (₹)</label>
+              <input id="total_realized" placeholder="3,00,00,000" oninput="recalc()"/>
+              <label>Total Amount Deposited into Bank (₹)</label>
+              <input id="total_deposited" placeholder="2,10,00,000" oninput="recalc()"/>
+              <label>% of Deposit Made <span class="calc">● Auto-calculated</span></label>
+              <input id="pct_deposited" class="auto" readonly tabindex="-1"/>
             </div>
           </div>
         </div>
@@ -617,23 +636,23 @@
         <div class="txn-box">
           <div class="txn-hdr">🏦 Quarterly Bank Reconciliation</div>
           <div class="txn-fields">
-            <div class="grid g2">
-              <div class="fg"><label>Opening Balance Date</label>
-                <input id="q_open_date" placeholder="01st October 2025"/></div>
-              <div class="fg"><label>Opening Balance (₹)</label>
-                <input id="q_open_bal" placeholder="1,00,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Deposits from Sales during Quarter (₹)</label>
-                <input id="q_dep_sales" placeholder="4,00,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Other Deposits (₹)</label>
-                <input id="q_dep_other" placeholder="0" oninput="recalc()"/></div>
-              <div class="fg"><label>Withdrawals from Sale Proceeds (₹)</label>
-                <input id="q_wdl_sales" placeholder="5,00,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Other Withdrawals (₹)</label>
-                <input id="q_wdl_other" placeholder="0" oninput="recalc()"/></div>
-              <div class="fg"><label>Closing Balance (₹) <span class="calc">● Auto = Open + Dep − Wdl</span></label>
-                <input id="q_close_bal" class="auto" readonly tabindex="-1"/></div>
-              <div class="fg"><label>Closing Balance Date</label>
-                <input id="q_close_date" placeholder="31st December 2025"/></div>
+            <div class="kv-grid">
+              <label>Opening Balance Date</label>
+              <input id="q_open_date" placeholder="01st October 2025"/>
+              <label>Opening Balance (₹)</label>
+              <input id="q_open_bal" placeholder="1,00,00,000" oninput="recalc()"/>
+              <label>Deposits from Sales during Quarter (₹)</label>
+              <input id="q_dep_sales" placeholder="4,00,00,000" oninput="recalc()"/>
+              <label>Other Deposits (₹)</label>
+              <input id="q_dep_other" placeholder="0" oninput="recalc()"/>
+              <label>Withdrawals from Sale Proceeds (₹)</label>
+              <input id="q_wdl_sales" placeholder="5,00,00,000" oninput="recalc()"/>
+              <label>Other Withdrawals (₹)</label>
+              <input id="q_wdl_other" placeholder="0" oninput="recalc()"/>
+              <label>Closing Balance (₹) <span class="calc">● Auto = Open + Dep − Wdl</span></label>
+              <input id="q_close_bal" class="auto" readonly tabindex="-1"/>
+              <label>Closing Balance Date</label>
+              <input id="q_close_date" placeholder="31st December 2025"/>
             </div>
           </div>
         </div>
@@ -642,19 +661,19 @@
         <div class="txn-box">
           <div class="txn-hdr">📈 Cumulative Reconciliation (From Project Beginning till Quarter End)</div>
           <div class="txn-fields">
-            <div class="grid g2">
-              <div class="fg"><label>Opening Balance of Account (₹)</label>
-                <input id="c_open_bal" placeholder="0" oninput="recalc()"/></div>
-              <div class="fg"><label>Total Deposits from Sale Proceeds (incl. old RERA account) (₹)</label>
-                <input id="c_dep_sales" placeholder="16,00,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Total Deposits other than Sale Proceeds (₹)</label>
-                <input id="c_dep_other" placeholder="50,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Total Withdrawals from Sale Proceeds incl. returns (₹)</label>
-                <input id="c_wdl_sales" placeholder="17,00,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Total Withdrawals other than Sale Proceeds (₹)</label>
-                <input id="c_wdl_other" placeholder="50,00,000" oninput="recalc()"/></div>
-              <div class="fg"><label>Closing Balance for Current Quarter (₹) <span class="calc">● Auto</span></label>
-                <input id="c_close_bal" class="auto" readonly tabindex="-1"/></div>
+            <div class="kv-grid">
+              <label>Opening Balance of Account (₹)</label>
+              <input id="c_open_bal" placeholder="0" oninput="recalc()"/>
+              <label>Total Deposits from Sale Proceeds (incl. old RERA account) (₹)</label>
+              <input id="c_dep_sales" placeholder="16,00,00,000" oninput="recalc()"/>
+              <label>Total Deposits other than Sale Proceeds (₹)</label>
+              <input id="c_dep_other" placeholder="50,00,000" oninput="recalc()"/>
+              <label>Total Withdrawals from Sale Proceeds incl. returns (₹)</label>
+              <input id="c_wdl_sales" placeholder="17,00,00,000" oninput="recalc()"/>
+              <label>Total Withdrawals other than Sale Proceeds (₹)</label>
+              <input id="c_wdl_other" placeholder="50,00,000" oninput="recalc()"/>
+              <label>Closing Balance for Current Quarter (₹) <span class="calc">● Auto</span></label>
+              <input id="c_close_bal" class="auto" readonly tabindex="-1"/>
             </div>
           </div>
         </div>
@@ -731,7 +750,7 @@
             Expected columns: <b>Flat No.</b> | <b>Carpet Area</b> | <b>Agreement Price</b> | <b>Received Amount</b> | <b>Date of Agreement</b> | <b>Registered</b>
             <span class="template-link" onclick="event.stopPropagation(); downloadTemplate()">⬇ Download Template</span>
           </div>
-          <button class="uz-btn" onclick="event.stopPropagation(); document.getElementById('xlsxInput').click()">Choose File</button>
+          <button type="button" class="uz-btn" onclick="event.stopPropagation(); document.getElementById('xlsxInput').click()">Choose File</button>
         </div>
 
         <div class="upload-status" id="uploadStatus"></div>
@@ -1680,6 +1699,26 @@ function handleGsFileSelect(e) {
   e.target.value = '';
 }
 
+// Fields that are always copied regardless of quarter age
+const PERMANENT_FIELDS = new Set([
+  'krera_reg','project_name','promoter_name','project_cost','project_cost_words','place',
+  'b1_holder','b1_krbad','b1_acno','b1_bank','b1_ifsc','b1_branch',
+  'b2_holder','b2_krbad','b2_acno','b2_bank','b2_ifsc','b2_branch',
+  'b3_holder','b3_krbad','b3_acno','b3_bank','b3_ifsc','b3_branch',
+  'firm_name','frn','ca_name','ca_designation','membership_no','ca_address','ca_contact','ca_email',
+  'lc_a_est','lc_b_est','lc_c_est',
+  'dc_i_est','dc_iii_est','dc_tax_est','dc_int_est',
+  'total_saleable_area','asr_rate','unsold_flats'
+]);
+
+// Fields also copied for immediate previous quarter (variable data that carries forward)
+const CARRY_FORWARD_FIELDS = new Set([
+  'lc_a_inc','lc_b_inc','lc_c_inc',
+  'dc_ii_inc','dc_iii_inc','dc_tax_inc','dc_int_inc',
+  'arch_pct','withdrawn',
+  'c_dep_sales','c_dep_other','c_wdl_sales','c_wdl_other'
+]);
+
 async function parsePrevCertificate(file) {
   const statusEl = document.getElementById('gsPrevStatus');
 
@@ -1698,23 +1737,47 @@ async function parsePrevCertificate(file) {
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || 'Server error');
 
+    const isImmediate = document.getElementById('prevQtrImmediate')?.checked !== false;
     let filled = 0;
+
+    // Fill permanent fields (always)
     Object.entries(data).forEach(([id, val]) => {
       if (!val) return;
+      // Skip variable fields for older quarters
+      if (!PERMANENT_FIELDS.has(id)) {
+        if (!isImmediate) return;            // older quarter: skip non-permanent
+        if (!CARRY_FORWARD_FIELDS.has(id)) return;  // immediate: skip unknown ids
+      }
       const el = document.getElementById(id);
       if (el) { el.value = String(val); filled++; }
     });
 
+    // For immediate previous quarter: map closing → opening balances
+    if (isImmediate) {
+      if (data.q_close_bal) {
+        const el = document.getElementById('q_open_bal');
+        if (el) { el.value = String(data.q_close_bal); filled++; }
+      }
+      if (data.q_close_date) {
+        const el = document.getElementById('q_open_date');
+        if (el) { el.value = String(data.q_close_date); filled++; }
+      }
+    }
+
     recalc();
 
+    const modeNote = isImmediate
+      ? 'Closing balances mapped as opening balances. Update this quarter\'s transaction amounts.'
+      : 'Only permanent data copied. Fill in all quarter-specific amounts manually.';
+
     statusEl.innerHTML = `
-      <div class="upload-status success" style="display:flex;margin-top:10px">
-        ✅ Extracted <b>${filled} fields</b> from <b>${file.name}</b>.
-        Please update quarter-specific dates and amounts for the new quarter.
+      <div class="upload-status success" style="display:flex;flex-direction:column;gap:4px;margin-top:10px">
+        <span>✅ Extracted <b>${filled} fields</b> from <b>${file.name}</b>.</span>
+        <span style="font-size:.77rem;opacity:.85">${modeNote}</span>
       </div>`;
 
-    // Auto-close after 3 seconds
-    setTimeout(gsSkip, 3000);
+    // Auto-close after 4 seconds
+    setTimeout(gsSkip, 4000);
 
   } catch(err) {
     let msg = err.message || 'Unknown error';
