@@ -129,6 +129,19 @@
 
     @media(max-width:700px){.g2,.g3,.g4{grid-template-columns:1fr}.full{grid-column:1}}
 
+    /* ── Full Certificate Preview (Review step) ────────────────────────────── */
+    .cert-preview{font-family:'Georgia','Times New Roman',serif;color:#111}
+    .cert-pg{background:#fff;border:1px solid #d0dae8;border-radius:7px;padding:28px 34px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,.07);font-size:9.5pt;line-height:1.6;position:relative}
+    .cert-pg-lbl{background:#1F497D;color:#fff;font-family:'Segoe UI',sans-serif;font-size:.68rem;font-weight:700;padding:5px 14px;margin:-28px -34px 18px;border-radius:6px 6px 0 0;letter-spacing:.04em}
+    .cert-cost-tbl{width:100%;border-collapse:collapse;font-size:8.5pt;margin:6px 0}
+    .cert-cost-tbl th{background:#1F497D;color:#fff;padding:5px 7px;text-align:center;border:1px solid #1a4070}
+    .cert-cost-tbl td{border:1px solid #c8d5e8;padding:3px 7px;vertical-align:middle}
+    .cert-inv-tbl{width:100%;border-collapse:collapse;font-size:8.5pt}
+    .cert-inv-tbl th{background:#1F497D;color:#fff;padding:5px 7px;text-align:center;border:1px solid #1a4070}
+    .cert-inv-tbl td{border:1px solid #c8d5e8;padding:3px 6px;vertical-align:middle}
+    .cert-inv-tbl tr:nth-child(even) td{background:#f5f8fd}
+    .cert-sig{margin-top:18px;font-size:9.5pt;line-height:1.7}
+
     /* ── Getting Started Modal ─────────────────────────────────────────────── */
     .gs-overlay{display:flex;position:fixed;inset:0;background:rgba(10,25,47,.72);z-index:10000;align-items:center;justify-content:center;padding:20px}
     .gs-box{background:#fff;border-radius:18px;padding:38px 40px 30px;max-width:600px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,.28);text-align:center}
@@ -811,11 +824,11 @@
         <div class="card-title"><span class="badge">✎</span> Qualification / Observations</div>
         <div class="hint" style="margin-bottom:10px">Click a template to append it. Values are auto-filled from your entered data.</div>
         <div class="obs-chips">
-          <button type="button" class="obs-chip" onclick="addObsEstimatedCost()">📝 Estimated Cost Note</button>
-          <button type="button" class="obs-chip" onclick="addObsBankChange()">🏦 Bank Account Change</button>
           <button type="button" class="obs-chip" onclick="addObsCollected()">💰 Collected &amp; Deposited</button>
-          <button type="button" class="obs-chip" onclick="addObsArchitect()">🏗 Architect's Certificate</button>
           <button type="button" class="obs-chip" onclick="addObsWithdrawable()">📊 Withdrawable Amount</button>
+          <button type="button" class="obs-chip" onclick="addObsArchitect()">🏗 Architect's Certificate</button>
+          <button type="button" class="obs-chip" onclick="addObsEstimatedCost()">📝 Estimated Cost Change</button>
+          <button type="button" class="obs-chip" onclick="addObsBankChange()">🏦 Bank Account Change</button>
           <button type="button" class="obs-chip" onclick="addObsCompliance()">✅ RERA Compliance</button>
           <button type="button" class="obs-chip danger" onclick="clearObs()">🗑 Clear All</button>
         </div>
@@ -1152,50 +1165,322 @@ function collectData() {
 function buildReview() {
   recalc();
   const d = collectData();
-  const borrows = d.borrowings.length ? d.borrowings.map((b,i) => `(${i+1}) ${b.lender}`).join(', ') : 'None';
-  const mortgs  = d.mortgages.length  ? d.mortgages.map((m,i)  => `(${i+1}) ${m.mortgaged_to}`).join(', ') : 'None';
-  function row(k,v){ return `<div class="rv-k">${k}</div><div class="rv-v">${v||'<em style="color:#aaa">—</em>'}</div>`; }
+  const fv  = (k, fb='—') => d[k] || fb;
+  const ir  = v => v ? '₹ ' + v : '—';   // monetary display (v from fv(k,''))
+  const pv  = v => v ? v + '%' : '—';    // percent display
+
+  // ── Row builders ──────────────────────────────────────────────────────────
+  function dataRow(sl, label, est, inc, bg, bold, indent) {
+    const rs = bg   ? `background:${bg};` : '';
+    const fw = bold ? 'font-weight:700;'  : '';
+    const pd = indent ? `padding-left:${indent*14}px;` : '';
+    return `<tr style="${rs}">
+      <td style="text-align:center;${fw}">${sl||''}</td>
+      <td style="${fw}${pd}">${label}</td>
+      <td style="text-align:right;${fw}">${est||''}</td>
+      <td style="text-align:right;${fw}">${inc||''}</td>
+    </tr>`;
+  }
+  function sectRow(sl, label) {
+    return `<tr style="background:#e8f0fb">
+      <td style="text-align:center;font-weight:700;font-style:italic">${sl||''}</td>
+      <td colspan="3" style="font-weight:700;font-style:italic">${label}</td>
+    </tr>`;
+  }
+  function subHdr(text) {
+    return `<tr style="background:#eef3fa">
+      <td></td>
+      <td colspan="3" style="font-weight:700;padding-left:4px">${text}</td>
+    </tr>`;
+  }
+  function singleRow(label, val, bg, bold) {
+    const fw = bold ? 'font-weight:700;' : '';
+    return `<tr style="background:${bg||'#fafcff'}">
+      <td></td>
+      <td style="${fw}">${label}</td>
+      <td colspan="2" style="text-align:right;${fw}">${val||'—'}</td>
+    </tr>`;
+  }
+  function subtotRow(label, est, inc) {
+    return dataRow('', label, est, inc, '#d5e3f7', true, 0);
+  }
+  function lvRow(label, val, bg, bold) {
+    const fw = bold ? 'font-weight:700;' : '';
+    return `<tr style="background:${bg||'#fafcff'}">
+      <td></td>
+      <td style="padding-left:10px;${fw}">${label}</td>
+      <td colspan="2" style="${fw}">${val||'—'}</td>
+    </tr>`;
+  }
+
+  // ── Bank account block ────────────────────────────────────────────────────
+  function bankSect(pfx, title) {
+    const holder = fv(pfx+'_holder',''), acno = fv(pfx+'_acno','');
+    if (!holder && !acno) return '';
+    return `<div style="margin:8px 0 8px 14px">
+      <div style="font-weight:700;color:#1F497D;font-size:9pt;margin-bottom:3px">${title}</div>
+      <table style="border-collapse:collapse;font-size:9pt">
+        <tr><td style="width:185px;color:#555;padding:1px 8px 1px 0">Name of the Account Holder</td><td>: ${holder}</td></tr>
+        <tr><td style="color:#555;padding:1px 8px 1px 0">Account Name as per KRERA</td><td>: ${fv(pfx+'_krbad','')}</td></tr>
+        <tr><td style="color:#555;padding:1px 8px 1px 0">Designated Account Number</td><td>: <strong>${acno}</strong></td></tr>
+        <tr><td style="color:#555;padding:1px 8px 1px 0">Bank Name</td><td>: ${fv(pfx+'_bank','')}</td></tr>
+        <tr><td style="color:#555;padding:1px 8px 1px 0">IFSC Code</td><td>: ${fv(pfx+'_ifsc','')}</td></tr>
+        <tr><td style="color:#555;padding:1px 8px 1px 0">Branch Name</td><td>: ${fv(pfx+'_branch','')}</td></tr>
+      </table>
+    </div>`;
+  }
+
+  // ── CA Signature block ────────────────────────────────────────────────────
+  function sigBlock(udinKey) {
+    const udin = d[udinKey] || d.udin1 || '—';
+    return `<div class="cert-sig">
+      <div>Yours Faithfully,</div>
+      <div>For ${fv('firm_name')} </div>
+      <div>Chartered Accountants,</div>
+      <div>FRN: ${fv('frn')}</div>
+      <div style="height:50px"></div>
+      <div><strong>CA ${fv('ca_name')}</strong></div>
+      <div>${fv('ca_designation')}</div>
+      <div>Membership No.: ${fv('membership_no')}</div>
+      <div style="margin-top:8px">Date: ${fv('cert_date')}</div>
+      <div>Place: ${fv('place','Bangalore')}</div>
+      <div>UDIN: ${udin}</div>
+    </div>`;
+  }
+
+  // ── Derived values ────────────────────────────────────────────────────────
+  const costStr = fv('project_cost','')
+    ? `₹ ${fv('project_cost','')}/-${d.project_cost_words ? ' (' + d.project_cost_words + ')' : ''}`
+    : '—';
+  const obsLines = (d.observations||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  const obsHtml  = obsLines.length
+    ? `<div style="margin-top:12px"><strong>Qualification/Observations:</strong></div>
+       <div style="margin-top:5px;padding-left:18px">${obsLines.map(l=>`<div style="margin-bottom:3px">${l}</div>`).join('')}</div>`
+    : '';
+
+  const borrowRows = d.borrowings.length
+    ? d.borrowings.map((b,i) => {
+        const p = d.borrowings.length > 1 ? `(${i+1}) ` : '';
+        return lvRow(p+'Name of the Lender', b.lender||'NIL')
+             + lvRow(p+'Amount Disbursed', ir(b.amt_disbursed))
+             + lvRow(p+'Amount Pending for Disbursement from Lender', ir(b.pending_disb))
+             + lvRow(p+'Amount to be Repaid to Lender', ir(b.amt_repay));
+      }).join('')
+    : lvRow('Not Applicable', 'NIL');
+
+  const mortgRows = d.mortgages.length
+    ? d.mortgages.map((m,i) => {
+        const p = d.mortgages.length > 1 ? `(${i+1}) ` : '';
+        return lvRow(p+'Mortgaged to (Name of Entity / Institution)', m.mortgaged_to||'NIL')
+             + lvRow(p+'Amount Disbursed', ir(m.m_amt_disbursed))
+             + lvRow(p+'Amount Pending for Disbursement', ir(m.m_pending))
+             + lvRow(p+'Amount to be Repaid to Lender', ir(m.m_repay));
+      }).join('')
+    : lvRow('Not Applicable', 'NIL');
+
+  let totalBal = 0;
+  const soldRows = (d.sold_inventory||[]).map((item,i) => {
+    const bal = parseFloat((item.balance||'0').replace(/,/g,'')) || 0;
+    totalBal += bal;
+    const bg = i % 2 === 1 ? 'background:#f5f8fd;' : '';
+    return `<tr style="${bg}">
+      <td style="text-align:center">${i+1}</td>
+      <td style="text-align:center">${item.flat_no||''}</td>
+      <td style="text-align:center">${item.carpet_area||''}</td>
+      <td style="text-align:right">${item.agreement_price||''}</td>
+      <td style="text-align:right">${item.received||''}</td>
+      <td style="text-align:right">${item.balance||''}</td>
+      <td style="text-align:center">${item.date||''}</td>
+      <td style="text-align:center">${item.registered||'NO'}</td>
+    </tr>`;
+  }).join('');
+
+  // ── PAGE 1: Certificate ───────────────────────────────────────────────────
+  const pg1 = `<div class="cert-pg">
+    <div class="cert-pg-lbl">PAGE 1 — CHARTERED ACCOUNTANT'S CERTIFICATE</div>
+    <div style="text-align:center;font-weight:700;font-size:11pt">[KARNATAKA REAL ESTATE REGULATORY AUTHORITY</div>
+    <div style="text-align:center;font-weight:700;font-size:11pt;margin-bottom:10px">(Real Estate (Regulation &amp; Development) Rules, 2017)]</div>
+    <div style="text-align:center;font-weight:700;font-size:12pt;text-decoration:underline">FORM-4</div>
+    <div style="text-align:center;font-weight:700;font-size:11pt;margin-bottom:12px">CHARTERED ACCOUNTANT'S CERTIFICATE</div>
+    <div style="text-align:right;margin-bottom:8px">Date: ${fv('cert_date')}</div>
+    <table style="border-collapse:collapse;width:100%;font-size:9.5pt;margin-bottom:10px">
+      <tr><td style="width:200px;color:#555;padding:2px 0">KRERA Registration Number</td><td>: <strong>${fv('krera_reg')}</strong></td></tr>
+      <tr><td style="color:#555;padding:2px 0">Project Name</td><td>: ${fv('project_name')}</td></tr>
+      <tr><td style="color:#555;padding:2px 0">Promoter Name</td><td>: ${fv('promoter_name')}</td></tr>
+      <tr><td style="color:#555;padding:2px 0">Cost of Real Estate Project</td><td>: ${costStr}</td></tr>
+      ${d.quarter_label ? `<tr><td style="color:#555;padding:2px 0">Quarter</td><td>: ${d.quarter_label}</td></tr>` : ''}
+      <tr><td style="color:#555;padding:2px 0">Quarter End Date</td><td>: ${fv('quarter_end')}</td></tr>
+    </table>
+    <p style="margin:0 0 8px">This Certificate is issued in accordance with the provisions of the Real Estate (Regulation and Development) Act, 2016 read with the Karnataka Real Estate (Regulation and Development Rules, 2017.</p>
+    <p style="margin:0 0 8px">The Promoter in compliance with section 4(2)(l)(D), of the Real Estate (Regulation and Development) Act, 2016 has deposited 70% of the amounts received from the allottees of this project (refer observations) in the following account:</p>
+    ${bankSect('b1','Bank Account 1')}
+    ${bankSect('b2','Bank Account 2')}
+    ${bankSect('b3','Bank Account 3')}
+    <p style="margin:10px 0 8px">This certificate is being issued for the project ${fv('project_name')} with RERA Registration No. : ${fv('krera_reg')} for the quarter ended ${fv('quarter_end')} in compliance of the provisions of section 4(2)(l)(D) of the Act and based on the records and documents produced before me and explanations provided to me by the Management of the Company.</p>
+    ${obsHtml}
+    ${sigBlock('udin1')}
+  </div>`;
+
+  // ── PAGE 2: Cost Table + Borrowings + Bank Transactions ───────────────────
+  const pg2 = `<div class="cert-pg">
+    <div class="cert-pg-lbl">PAGE 2 — ADDITIONAL INFORMATION FOR PROJECTS</div>
+    <table class="cert-cost-tbl">
+      <thead><tr>
+        <th style="width:32px">Sl.</th>
+        <th>Particulars</th>
+        <th style="width:96px">Estimated Cost (₹)</th>
+        <th style="width:96px">Cost Incurred (₹)</th>
+      </tr></thead>
+      <tbody>
+        ${sectRow('1','Land Cost')}
+        ${dataRow('','a) Cost incurred for acquisition of ownership and title of the land parcels (outright purchase / lease etc.)',fv('lc_a_est',''),fv('lc_a_inc',''),'',false,1)}
+        ${dataRow('','b) Amount paid for Acquisition / purchase of TDR (if any)',fv('lc_b_est',''),fv('lc_b_inc',''),'',false,1)}
+        ${dataRow('','c) Amount paid to the Competent Authority for project approval, NOCs, stamp duty, transfer charges, registration charges, conversion charges, taxes, statutory payments to State and Central Government',fv('lc_c_est',''),fv('lc_c_inc',''),'',false,1)}
+        ${subtotRow('Sub – Total Land Cost',fv('lc_total_est',''),fv('lc_total_inc',''))}
+        ${sectRow('','Development Cost / Cost of Construction')}
+        ${dataRow('','(i) Estimated Cost of Construction as certified by Engineer',fv('dc_i_est',''),'','',false,1)}
+        ${dataRow('','(ii) Actual Cost of construction incurred as per books of accounts as verified by CA','',fv('dc_ii_inc',''),'',false,1)}
+        ${dataRow('','(iii) On-site expenditure for development of entire project excluding cost of construction (salaries, consultants fees, site overheads, development works, cost of services including water, electricity, sewerage, drainage, layout roads etc., cost of machineries and equipment, consumables etc.)',fv('dc_iii_est',''),fv('dc_iii_inc',''),'',false,1)}
+        ${dataRow('','Payment of Taxes, cess, fees, charges, premiums, interest etc., to any statutory Authority',fv('dc_tax_est',''),fv('dc_tax_inc',''),'',false,1)}
+        ${dataRow('','Interest payable to financial institutions, scheduled banks, NBFCs or money lenders on construction funding',fv('dc_int_est',''),fv('dc_int_inc',''),'',false,1)}
+        ${subtotRow('Sub – Total Development Cost',fv('dc_total_est',''),fv('dc_total_inc',''))}
+        ${singleRow('Total Estimated Cost of the Real Estate Project [Land Estimated + Development Estimated]',fv('total_est',''),'#d5e3f7',true)}
+        ${singleRow('Total Cost Incurred of the Real Estate Project [Land Incurred + Development Incurred]',fv('total_inc',''),'#d5e3f7',true)}
+        ${singleRow("Percentage of completion of construction work (as per Project Architect's Certificate)",pv(fv('arch_pct','')),'#fafcff',false)}
+        ${singleRow('Proportion of the Cost incurred on Land Cost to the Total Estimated Cost',fv('prop_land',''),'#eaf7ee',false)}
+        ${singleRow('Proportion of the Cost incurred on Construction Cost to the Total Estimated Cost',fv('prop_dev',''),'#eaf7ee',false)}
+        ${singleRow('Total percentage of completion of construction as per CA (Proportion Land + Proportion Dev)',fv('ca_pct',''),'#eaf7ee',false)}
+        ${singleRow('Amount which can be withdrawn from Designated Account (Total Estimated Cost × Percentage of completion) [lower of Architect % &amp; CA %]',fv('withdrawable',''),'#d5f0e8',true)}
+        ${singleRow('Less: Amount withdrawn till date of this certificate as per the Books of Accounts and Bank Statement',fv('withdrawn',''),'#fafcff',false)}
+        ${singleRow('Net Amount which can be withdrawn from the Designated Bank Account under this certificate',fv('net_withdrawable',''),'#d5f0e8',true)}
+        ${sectRow('2','Borrowings / Mortgage Details (If Applicable)')}
+        ${subHdr('A. Borrowing Details')}
+        ${borrowRows}
+        ${subHdr('B. Mortgage Details')}
+        ${mortgRows}
+        ${sectRow('3','Details of transactions in the designated RERA Bank Account')}
+        ${lvRow('Total number of units booked',fv('units_booked',''),'#f7faff',false)}
+        ${lvRow('Total amount realized from sale of units during the quarter',ir(fv('total_realized','')),'#f7faff',false)}
+        ${lvRow('Total amount deposited into the bank out of sale proceeds during the quarter',ir(fv('total_deposited','')),'#f7faff',false)}
+        ${lvRow('% Of Deposit made',fv('pct_deposited',''),'#eaf7ee',true)}
+        ${subHdr('Reconciliation for the Quarter')}
+        ${lvRow('Opening Balance Date',fv('q_open_date',''))}
+        ${lvRow('Opening Balance as per bank statement (INR)',ir(fv('q_open_bal','')))}
+        ${lvRow('Deposits during the Quarter on account of sales (INR)',ir(fv('q_dep_sales','')))}
+        ${lvRow('Other Deposits made (If any)',ir(fv('q_dep_other','')))}
+        ${lvRow('Withdrawals during the Quarter from sale proceeds (INR)',ir(fv('q_wdl_sales','')))}
+        ${lvRow('Other withdrawals made (if any)',ir(fv('q_wdl_other','')))}
+        ${lvRow('Closing Balance as per bank statement (INR)',ir(fv('q_close_bal','')),'#d5e3f7',true)}
+        ${lvRow('Closing Balance Date',fv('q_close_date',''))}
+        ${subHdr('Cumulative Reconciliation from beginning of project (till end of quarter)')}
+        ${lvRow('Opening balance of the account (INR)',ir(fv('c_open_bal','')))}
+        ${lvRow('Total Deposits made from sale proceeds (including old RERA Account) (INR)',ir(fv('c_dep_sales','')))}
+        ${lvRow('Total deposits made other than sale proceeds (if any) (INR)',ir(fv('c_dep_other','')))}
+        ${lvRow('Total Withdrawals made from sale proceeds including Sales returns (INR)',ir(fv('c_wdl_sales','')))}
+        ${lvRow('Total withdrawals made other than those from sale proceeds (if any) (INR)',ir(fv('c_wdl_other','')))}
+        ${lvRow('Closing balance for the current quarter (INR)',ir(fv('c_close_bal','')),'#d5e3f7',true)}
+      </tbody>
+    </table>
+  </div>`;
+
+  // ── PAGE 3: Receivables ───────────────────────────────────────────────────
+  const pg3 = `<div class="cert-pg">
+    <div class="cert-pg-lbl">PAGE 3 — RECEIVABLES</div>
+    <table class="cert-inv-tbl">
+      <thead><tr>
+        <th style="width:30px">Sl.</th>
+        <th>Particulars</th>
+        <th style="width:120px">Amount (₹)</th>
+      </tr></thead>
+      <tbody>
+        <tr style="background:#eaf7ee">
+          <td></td>
+          <td style="font-weight:700">Estimated Balance Cost to Complete the Real Estate Project (Total Estimated Cost − Total Cost Incurred)</td>
+          <td style="text-align:right;font-weight:700">${fv('bal_cost','')}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>Balance number of receivables from sold apartments as per Annexure A to this certificate (as certified by CA as verified from records and books of Accounts)</td>
+          <td style="text-align:right">${fv('bal_receivables','')}</td>
+        </tr>
+        <tr>
+          <td style="text-align:center">3.</td>
+          <td>(i) Balance Unsold area (To be certified by Management and verified by CA from records and books of accounts)</td>
+          <td style="text-align:right">${fv('unsold_area','')} Sq Mts</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>(ii) Estimated amount of sales proceeds in respect of unsold apartments (calculated as per ASR × unsold area as on date of certificate) as per Annexure A</td>
+          <td style="text-align:right">${fv('unsold_asr_total','')}</td>
+        </tr>
+        <tr style="background:#d5e3f7;font-weight:700">
+          <td style="text-align:center">4.</td>
+          <td>Estimated receivables of ongoing project. Sum of 2 + 3(ii)</td>
+          <td style="text-align:right">${fv('est_receivables','')}</td>
+        </tr>
+        <tr style="background:#d5f0e8;font-weight:700">
+          <td style="text-align:center">5.</td>
+          <td>Amount to be deposited in Designated Account — 70% or 100%<br><small style="font-weight:400">(If Sl.4 &gt; Sl.1 → 70%; If Sl.4 ≤ Sl.1 → 100%)</small></td>
+          <td style="text-align:right">${fv('amt_to_deposit','')}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`;
+
+  // ── PAGE 4: Sold Inventory / Annexure A (only if data exists) ─────────────
+  let pg4 = '';
+  if (d.sold_inventory && d.sold_inventory.length) {
+    pg4 = `<div class="cert-pg">
+      <div class="cert-pg-lbl">PAGE 4 — ANNEXURE A (SOLD INVENTORY)</div>
+      <div style="font-weight:700;font-size:12pt;text-decoration:underline;margin-bottom:4px">Annexure A</div>
+      <div style="font-weight:700;margin-bottom:4px">Statement for calculation of Receivables from the Sales of the Ongoing Real Estate Project</div>
+      <div style="font-weight:700;text-decoration:underline;margin-bottom:10px">Sold Inventory</div>
+      <table class="cert-inv-tbl">
+        <thead><tr>
+          <th>Sr. No.</th><th>Flat No.</th><th>Carpet Area (sq.mts.)</th>
+          <th>Unit Consideration as per Agreement (₹)</th><th>Received Amount (₹)</th>
+          <th>Balance Receivable (₹)</th><th>Date of Agreement</th><th>Registered?</th>
+        </tr></thead>
+        <tbody>
+          ${soldRows}
+          <tr style="background:#d5e3f7;font-weight:700">
+            <td colspan="5" style="text-align:right">Total Balance Receivable</td>
+            <td style="text-align:right">${totalBal.toLocaleString('en-IN',{maximumFractionDigits:0})}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  }
+
+  // ── PAGE 5: Unsold Inventory + Signature ──────────────────────────────────
+  const pg5 = `<div class="cert-pg">
+    <div class="cert-pg-lbl">PAGE 5 — UNSOLD INVENTORY</div>
+    <div style="font-weight:700;font-size:11pt;text-decoration:underline;margin-bottom:8px">Unsold Inventory Valuation</div>
+    <p style="margin:0 0 10px">Ready Reckoner Rate as on the date of Certificate of the Residential/Commercial premises Rs.${fv('asr_rate','')} per sq. mts.</p>
+    <table class="cert-inv-tbl" style="margin-bottom:16px">
+      <thead><tr>
+        <th>Sr. No.</th><th>Total Unsold Flats</th><th>Carpet Area (in sq.mts.) (A)</th>
+        <th>Unit Consideration as per Ready Reckoner Rate (ASR) (B) in INR</th><th>Total ASR consideration (A*B)</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="text-align:center">1</td>
+          <td style="text-align:center">${fv('unsold_flats','')}</td>
+          <td style="text-align:center">${fv('unsold_total_area','')}</td>
+          <td style="text-align:right">${fv('asr_rate','')}</td>
+          <td style="text-align:right">${fv('unsold_total_asr','')}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin:0 0 16px">This certificate is being issued for RERA compliance for ${fv('promoter_name')} and is based on the records and documents produced before me and explanations provided to me by the Management of the Company.</p>
+    ${sigBlock(d.udin2 ? 'udin2' : 'udin1')}
+  </div>`;
+
   document.getElementById('reviewContent').innerHTML = `
-    <div class="rv-sec"><h3>Project</h3><div class="rv-grid">
-      ${row('KRERA Reg.', d.krera_reg)} ${row('Date', d.cert_date)}
-      ${row('Project', d.project_name)} ${row('Promoter', d.promoter_name)}
-      ${row('Cost (₹)', d.project_cost)} ${row('Quarter', d.quarter_label)}
-      ${row('Quarter End', d.quarter_end)}
-    </div></div>
-    <div class="rv-sec"><h3>Cost Statement (Auto-calculated)</h3><div class="rv-grid">
-      ${row('Sub-Total Land (Est)', d.lc_total_est)} ${row('Sub-Total Land (Inc)', d.lc_total_inc)}
-      ${row('Sub-Total Dev (Est)', d.dc_total_est)} ${row('Sub-Total Dev (Inc)', d.dc_total_inc)}
-      ${row('Total Estimated Cost', d.total_est)} ${row('Total Cost Incurred', d.total_inc)}
-      ${row('Architect %', d.arch_pct + '%')} ${row('CA % (calculated)', d.ca_pct)}
-      ${row('Withdrawable Amount', d.withdrawable)} ${row('Less: Withdrawn', d.withdrawn)}
-      ${row('Net Withdrawable', d.net_withdrawable)}
-    </div></div>
-    <div class="rv-sec"><h3>Borrowings</h3><div class="rv-grid">
-      ${row('Lenders', borrows)} ${row('Mortgagees', mortgs)}
-    </div></div>
-    <div class="rv-sec"><h3>Receivables</h3><div class="rv-grid">
-      ${row('Balance Cost to Complete', d.bal_cost)}
-      ${row('Sold Inventory Balance', d.bal_receivables)}
-      ${row('Unsold ASR Value', d.unsold_total_asr)}
-      ${row('Est. Receivables (2+3ii)', d.est_receivables)}
-      ${row('Amount to Deposit', d.amt_to_deposit)}
-    </div></div>
-    <div class="rv-sec"><h3>Sold Inventory</h3>
-      <div style="font-size:.82rem;color:#555">${d.sold_inventory.length} unit(s) entered. Balance receivable total: ₹ ${d.bal_receivables}</div>
-    </div>
-    <div class="rv-sec"><h3>Unsold Inventory</h3><div class="rv-grid">
-      ${row('Total Saleable Area', d.total_saleable_area + ' sq.mts.')}
-      ${row('ASR Rate', '₹ ' + d.asr_rate + ' per sq.mt.')}
-      ${row('Total Unsold Flats', d.unsold_flats)}
-      ${row('Total Unsold Area', d.unsold_total_area + ' sq.mts.')}
-      ${row('Total ASR Value', '₹ ' + d.unsold_total_asr)}
-    </div></div>
-    <div class="rv-sec"><h3>CA</h3><div class="rv-grid">
-      ${row('Firm / FRN', d.firm_name + ' | FRN: ' + d.frn)}
-      ${row('CA Name', 'CA ' + d.ca_name + ', ' + d.ca_designation)}
-      ${row('Membership No.', d.membership_no)} ${row('UDIN', d.udin1)}
-    </div></div>
-  `;
+    <div class="cert-preview">
+      ${pg1}${pg2}${pg3}${pg4}${pg5}
+    </div>`;
 }
 
 // ─── Generate ──────────────────────────────────────────────────────────────────
