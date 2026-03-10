@@ -97,8 +97,12 @@ def pct(v):
 
 def remove_table_borders(tbl):
     """Remove all visible borders from a python-docx table."""
-    # Table-level borders
-    tblPr = tbl._tbl.get_or_add_tblPr()
+    # Table-level borders — use find() because CT_Tbl has no get_or_add_tblPr()
+    tbl_el = tbl._tbl
+    tblPr = tbl_el.find(qn('w:tblPr'))
+    if tblPr is None:
+        tblPr = OxmlElement('w:tblPr')
+        tbl_el.insert(0, tblPr)
     tblBorders = OxmlElement('w:tblBorders')
     for side in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
         bd = OxmlElement(f'w:{side}')
@@ -106,7 +110,7 @@ def remove_table_borders(tbl):
         bd.set(qn('w:space'), '0'); bd.set(qn('w:color'), 'auto')
         tblBorders.append(bd)
     tblPr.append(tblBorders)
-    # Cell-level borders
+    # Cell-level borders (CT_Tc supports get_or_add_tcPr)
     for row in tbl.rows:
         for cell in row.cells:
             tc = cell._tc
